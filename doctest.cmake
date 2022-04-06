@@ -16,5 +16,10 @@ include(ExternalProject)
   
   ExternalProject_Get_Property(doctest source_dir) # Expose required variable (DOCTEST_INCLUDE_DIR) to parent scope
   set(DOCTEST_INCLUDE_DIR ${source_dir}/doctest CACHE INTERNAL "Path to include folder for doctest")
+  # Adds the doctest cmake modules to our module path
+  #list(APPEND CMAKE_MODULE_PATH ${DOCTEST_INCLUDE_DIR}/scripts/cmake)
+  #set(${CMAKE_MODULE_PATH} APPEND ${CMAKE_MODULE_PATH} ${DOCTEST_INCLUDE_DIR}/scripts/cmake)
+  #list(APPEND ${CMAKE_MODULE_PATH} ${DOCTEST_INCLUDE_DIR}/scripts/cmake)
+  set(DOCTEST_SOURCE_DIR ${source_dir})
 endif()
 
