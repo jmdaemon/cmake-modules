@@ -14,7 +14,7 @@ function(make_library)
     set(ARG_PREFIX LIB)
     set(_OPTIONS_ARGS )
     set(_ONE_VALUE_ARGS NAME TYPE CSTANDARD)
-    set(_MULTI_VALUE_ARGS HEADERS SOURCES DEPS)
+    set(_MULTI_VALUE_ARGS HEADERS SOURCES DEPS SRC_GROUP_FILES)
     cmake_parse_arguments(${ARG_PREFIX} "${_OPTIONS_ARGS}" "${_ONE_VALUE_ARGS}" "${_MULTI_VALUE_ARGS}" ${ARGN})
 
     # Show make_library arguments
@@ -50,7 +50,7 @@ function(make_library)
     source_group(
         TREE "${PROJECT_SOURCE_DIR}/include"
         PREFIX "Header Files"
-        FILES ${LIB_HEADERS})
+        FILES ${LIB_SRC_GROUP_FILES})
 endfunction()
 
 function(make_static_shared_lib)
@@ -58,7 +58,7 @@ function(make_static_shared_lib)
     set(ARG_PREFIX LIB)
     set(_OPTIONS_ARGS )
     set(_ONE_VALUE_ARGS NAME CSTANDARD)
-    set(_MULTI_VALUE_ARGS HEADERS SOURCES DEPS)
+    set(_MULTI_VALUE_ARGS HEADERS SOURCES DEPS SRC_GROUP_FILES)
     cmake_parse_arguments(${ARG_PREFIX} "${_OPTIONS_ARGS}" "${_ONE_VALUE_ARGS}" "${_MULTI_VALUE_ARGS}" ${ARGN})
 
     make_library(
@@ -67,7 +67,8 @@ function(make_static_shared_lib)
         CSTANDARD "${LIB_CSTANDARD}"
         HEADERS "${LIB_HEADERS}"
         SOURCES "${LIB_SOURCES}"
-        DEPS "${LIB_DEPS}")
+        DEPS "${LIB_DEPS}"
+        SRC_GROUP_FILES "${LIB_SRC_GROUP_FILES}")
 
     make_library(
         NAME "${LIB_NAME}"
@@ -75,6 +76,7 @@ function(make_static_shared_lib)
         CSTANDARD "${LIB_CSTANDARD}"
         HEADERS "${LIB_HEADERS}"
         SOURCES "${LIB_SOURCES}"
-        DEPS "${LIB_DEPS}")
+        DEPS "${LIB_DEPS}"
+        SRC_GROUP_FILES "${LIB_SRC_GROUP_FILES}")
 endfunction()
 
