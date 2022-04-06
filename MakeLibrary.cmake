@@ -31,11 +31,12 @@ function(make_library)
     if(${LIB_TYPE} STREQUAL "static")
         # Build a static library
         set(TARGET ${LIB_NAME}_static)
+        add_library(${TARGET} STATIC)
     else()
         # Build a shared library by default
         set(TARGET ${LIB_NAME})
+        add_library(${TARGET} SHARED)
     endif()
-    add_library(${TARGET})
 
     # Set sources
     target_sources(${TARGET}
