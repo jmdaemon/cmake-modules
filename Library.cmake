@@ -67,7 +67,7 @@ function(make_static_shared_lib)
     cmake_parse_arguments(${ARG_PREFIX} "${_OPTIONS_ARGS}" "${_ONE_VALUE_ARGS}" "${_MULTI_VALUE_ARGS}" ${ARGN})
     set(LIB_TYPES SHARED STATIC)
 
-    foreach(LIB_TYPE LIB_TYPES)
+    foreach(LIB_TYPE ${LIB_TYPES})
         make_library(
             NAME "${LIB_NAME}"
             TYPE ${LIB_TYPE}
