@@ -28,21 +28,22 @@ function(make_library)
     #message(STATUS "LIB_DEPS: ${LIB_DEPS}")
     #message(STATUS "======================")
 
-    if(${LIB_TYPE} STREQUAL "static")
+    if(${LIB_TYPE} STREQUAL STATIC)
         # Build a static library
         set(TARGET ${LIB_NAME}_static)
-        add_library(${TARGET} STATIC)
-    else()
-        # Build a shared library by default
+    elseif(${LIB_TYPE} STREQUAL SHARED)
+        # Build a shared library
         set(TARGET ${LIB_NAME})
-        add_library(${TARGET} SHARED)
     endif()
+    # Add a library target
+    add_library(${TARGET} ${LIB_TYPE})
 
-    # Set sources
+    # Set the library sources
     target_sources(${TARGET}
         PRIVATE ${LIB_SOURCES}
         PUBLIC  ${LIB_HEADERS})
 
+    # Include the library headers and link the dependencies
     target_include_directories(${TARGET} PUBLIC ${LIB_HEADERS})
     target_link_libraries(${TARGET} PRIVATE ${LIB_DEPS})
     target_compile_features(${TARGET} PUBLIC ${LIB_CSTANDARD})
@@ -60,23 +61,17 @@ function(make_static_shared_lib)
     set(_ONE_VALUE_ARGS NAME CSTANDARD)
     set(_MULTI_VALUE_ARGS HEADERS SOURCES DEPS SRC_GROUP_FILES)
     cmake_parse_arguments(${ARG_PREFIX} "${_OPTIONS_ARGS}" "${_ONE_VALUE_ARGS}" "${_MULTI_VALUE_ARGS}" ${ARGN})
+    set(LIB_TYPES SHARED STATIC)
 
-    make_library(
-        NAME "${LIB_NAME}"
-        TYPE shared
-        CSTANDARD "${LIB_CSTANDARD}"
-        HEADERS "${LIB_HEADERS}"
-        SOURCES "${LIB_SOURCES}"
-        DEPS "${LIB_DEPS}"
-        SRC_GROUP_FILES "${LIB_SRC_GROUP_FILES}")
-
-    make_library(
-        NAME "${LIB_NAME}"
-        TYPE static
-        CSTANDARD "${LIB_CSTANDARD}"
-        HEADERS "${LIB_HEADERS}"
-        SOURCES "${LIB_SOURCES}"
-        DEPS "${LIB_DEPS}"
-        SRC_GROUP_FILES "${LIB_SRC_GROUP_FILES}")
+    foreach(LIB_TYPE LIB_TYPES)
+        make_library(
+            NAME "${LIB_NAME}"
+            TYPE ${LIB_TYPE}
+            CSTANDARD "${LIB_CSTANDARD}"
+            HEADERS "${LIB_HEADERS}"
+            SOURCES "${LIB_SOURCES}"
+            DEPS "${LIB_DEPS}"
+            SRC_GROUP_FILES "${LIB_SRC_GROUP_FILES}")
+    endforeach()
 endfunction()
 
