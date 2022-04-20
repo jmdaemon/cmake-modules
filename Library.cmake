@@ -97,8 +97,4 @@ function(import_external_library)
     set_property(
         TARGET ${LIB_NAME}
         PROPERTY INTERFACE_INCLUDE_DIRECTORIES ${LIB_HEADERS})
-    # Ensure the library exists and is not null
-    if(NOT ${LIB_NAME})
-        message(FATAL_ERROR "${LIB_NAME} not found!")
-    endif()
 endfunction()
