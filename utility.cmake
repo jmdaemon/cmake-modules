@@ -11,12 +11,14 @@ if (NOT TARGET utility)
     # Include the library
     set(UTILITY_LIB_SRC /usr/local/lib)
     set(UTILITY_LIB_FILE libutility.so)
-    import_library(
-        NAME utility
-        TYPE SHARED
-        FILE ${UTILITY_LIB_FILE}
-        SOURCE_DIR ${UTILITY_LIB_SRC})
-
+    # Import only if the library was installed here
+    if (EXISTS "${UTILITY_LIB_SRC}/${UTILITY_LIB_FILE}")
+        import_library(
+            NAME utility
+            TYPE SHARED
+            FILE ${UTILITY_LIB_FILE}
+            SOURCE_DIR ${UTILITY_LIB_SRC})
+    endif()
 endif()
 # If the library is not installed on our system
 if (ConfigureAsExternal)
