@@ -79,6 +79,9 @@ function(make_static_shared_lib)
     endforeach()
 endfunction()
 
+# Importing libraries & external libraries
+
+# Import a library that has already been built
 function(import_library)
     # Set make_library arguments
     set(ARG_PREFIX LIB)
@@ -104,7 +107,6 @@ function(import_library)
         IMPORTED_LOCATION "${LIB_FILE_PATH}")
 
 endfunction()
-
 
 # Imports a shared or static library into a CMake Project
 function(import_external_library)
