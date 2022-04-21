@@ -3,7 +3,7 @@
 find_library(cnc HINTS /usr/local/lib)
 
 # If the library is not installed on our system
-if (NOT cnc) 
+if (NOT TARGET cnc) 
     # Fetch and build it with FetchContent 
     include(FetchContent)
     FetchContent_Declare(
