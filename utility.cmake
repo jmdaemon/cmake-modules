@@ -18,7 +18,7 @@ function(import_library)
     # LIB_TYPE: STATIC or SHARED library
     # FILE: The name of the library file (lib.a, lib.so)
     # SOURCE_DIR: The directory where the library is located
-
+    message(STATUS "Including ${LIB_NAME} library")
     set(LIB_FILE_PATH "${LIB_SOURCE_DIR}/${LIB_FILE}")
 
     # Find the library on our system
@@ -43,13 +43,6 @@ if (NOT TARGET utility)
         FILE ${UTILITY_LIB_FILE}
         SOURCE_DIR ${UTILITY_LIB_SRC})
 
-    # Find the library on our system
-    #find_library(${UTILITY_LIB_SRC} NAMES ${UTILITY_LIB_NAME})
-    #message(STATUS "Utility library location: ${UTILITY_LIB_SRC}/${UTILITY_LIB_NAME}")
-
-    #add_library(utility SHARED IMPORTED GLOBAL)
-    #set_target_properties(utility PROPERTIES
-        #IMPORTED_LOCATION "${UTILITY_LIB_SRC}/${UTILITY_LIB_NAME}")
 endif()
 # If the library is not installed on our system
 if (ConfigureAsExternal)
