@@ -7,7 +7,7 @@ set(ConfigureAsSubproject FALSE)
 set(ConfigureAsExternal FALSE)
 
 # If the library hasn't been imported/included in our project
-if (NOT utility)
+if (NOT TARGET utility)
     # Include the library
     set(UTILITY_LIB_SRC /usr/local/lib)
     set(UTILITY_LIB_NAME libutility.so)
