@@ -79,6 +79,33 @@ function(make_static_shared_lib)
     endforeach()
 endfunction()
 
+function(import_library)
+    # Set make_library arguments
+    set(ARG_PREFIX LIB)
+    set(_OPTIONS_ARGS )
+    set(_ONE_VALUE_ARGS NAME TYPE FILE)
+    set(_MULTI_VALUE_ARGS SOURCE_DIR)
+    cmake_parse_arguments(${ARG_PREFIX} "${_OPTIONS_ARGS}" "${_ONE_VALUE_ARGS}" "${_MULTI_VALUE_ARGS}" ${ARGN})
+
+    # LIB_NAME: The name of the library
+    # LIB_TYPE: STATIC or SHARED library
+    # FILE: The name of the library file (lib.a, lib.so)
+    # SOURCE_DIR: The directory where the library is located
+    message(STATUS "Including ${LIB_NAME} library")
+    set(LIB_FILE_PATH "${LIB_SOURCE_DIR}/${LIB_FILE}")
+
+    # Find the library on our system
+    find_library(${LIB_SOURCE_DIR} NAMES ${LIB_FILE})
+    message(STATUS "${LIB_NAME} library location: ${LIB_FILE_PATH}")
+
+    # Add the library as a target on our system
+    add_library(${LIB_NAME} ${LIB_TYPE} IMPORTED GLOBAL)
+    set_target_properties(${LIB_NAME} PROPERTIES
+        IMPORTED_LOCATION "${LIB_FILE_PATH}")
+
+endfunction()
+
+
 # Imports a shared or static library into a CMake Project
 function(import_external_library)
     # Set make_library arguments
