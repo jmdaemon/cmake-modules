@@ -1,6 +1,12 @@
 # Utility C Library
 
-# Require import_external_library cmake module function
+# Note that there are a few ways you can specify utility
+# 1. As a system-wide installed library "in /usr/local/lib/"
+# 2. As a subproject in subprojects/utility (requires you to build the library first)
+# 3. As a dependency to be built alongside the project code
+# Note that currently only 1-2 are supported for now
+
+# Imports
 include(Library)
 
 # If the library hasn't been imported/included in our project
