@@ -34,7 +34,6 @@ if (NOT TARGET bytesize)
         #find_library(CURL_LIBRARY
     #NAMES curl curllib libcurl_imp curllib_static
     #HINTS "${CMAKE_PREFIX_PATH}/curl/lib"
-)
     elseif(${LIB_LOCAL})
         # Found under /usr/lib
         message(STATUS "Found: ${LIB_LOCAL}")
@@ -60,31 +59,31 @@ if (NOT TARGET bytesize)
 
     # If the library was not installed system wide
     # Configure as a subproject
-    else()
-        message(STATUS "Configuring bytesize as a subproject")
-        set(SUBPROJECT_BYTESIZE "${PROJECT_SOURCE_DIR}/subprojects/bytesize")
-        set(HEADERS_BYTESIZE "${PROJECT_SOURCE_DIR}/subprojects/bytesize/include")
-        if (EXISTS ${SUBPROJECT_BYTESIZE})
-            FetchContent_Declare(bytesize
-                GIT_REPOSITORY  https://github.com/jmdaemon/bytesize
-                SOURCE_DIR      ${SUBPROJECT_BYTESIZE})
+else()
+    message(STATUS "Configuring bytesize as a subproject")
+    set(SUBPROJECT_BYTESIZE "${PROJECT_SOURCE_DIR}/subprojects/bytesize")
+    set(HEADERS_BYTESIZE "${PROJECT_SOURCE_DIR}/subprojects/bytesize/include")
+    if (EXISTS ${SUBPROJECT_BYTESIZE})
+        FetchContent_Declare(bytesize
+            GIT_REPOSITORY  https://github.com/jmdaemon/bytesize
+            SOURCE_DIR      ${SUBPROJECT_BYTESIZE})
 
-            set(LIB_NAME bytesize)
-            add_library(${LIB_NAME})
-            target_link_libraries(${LIB_NAME} PUBLIC bytesize)
-            # Configure logc as a subproject
-            #set(LIB_NAME bytesize) # Shared library
-            #add_library(${LIB_NAME} SHARED
-                #"${PROJECT_SOURCE_DIR}/subprojects/log.c/src/log.c")
-            #target_include_directories(${LIB_NAME} PUBLIC ${HEADERS_LOG_C})
-            #set_target_properties(${LIB_NAME} PROPERTIES PUBLIC_HEADER "${HEADERS_LOG_C}/log.h")
+        set(LIB_NAME bytesize)
+        add_library(${LIB_NAME})
+        target_link_libraries(${LIB_NAME} PUBLIC bytesize)
+        # Configure logc as a subproject
+        #set(LIB_NAME bytesize) # Shared library
+        #add_library(${LIB_NAME} SHARED
+            #"${PROJECT_SOURCE_DIR}/subprojects/log.c/src/log.c")
+        #target_include_directories(${LIB_NAME} PUBLIC ${HEADERS_LOG_C})
+        #set_target_properties(${LIB_NAME} PROPERTIES PUBLIC_HEADER "${HEADERS_LOG_C}/log.h")
 
-            ##set(LIB_NAME ${TARGET}_static) # Static library
-            #set(LIB_NAME logc_static) # Static library
-            #add_library(${LIB_NAME} STATIC
-                #"${PROJECT_SOURCE_DIR}/subprojects/log.c/src/log.c")
-            #target_include_directories(${LIB_NAME} PUBLIC "${HEADERS_LOG_C}")
-        endif()
+        ##set(LIB_NAME ${TARGET}_static) # Static library
+        #set(LIB_NAME logc_static) # Static library
+        #add_library(${LIB_NAME} STATIC
+            #"${PROJECT_SOURCE_DIR}/subprojects/log.c/src/log.c")
+        #target_include_directories(${LIB_NAME} PUBLIC "${HEADERS_LOG_C}")
+    endif()
 
         # Configure the library as a subproject in our main repository
         #message(STATUS "\"libbytesize.so\" not found")
@@ -109,5 +108,5 @@ if (NOT TARGET bytesize)
             ## Specify some build commands
             ## Add the library
         #endif()
-    endif()
+    #endif()
 endif()
