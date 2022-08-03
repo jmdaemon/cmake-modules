@@ -224,13 +224,21 @@ function(import_external_library)
 endfunction()
 
 # include_lib
+#function(include_lib
+        #${LIB_NAME}
+        #${LIB_NAMES}
+        #${LIB_PUBLIC_HEADER}
+        #${LIB_GIT_REPO}
+        #${LIB_SUBPROJECT}
+        #${LIB_SUBPROJECT_INCLUDE})
 function(include_lib
-        ${LIB_NAME}
-        ${LIB_NAMES}
-        ${LIB_PUBLIC_HEADER}
-        ${LIB_GIT_REPO}
-        ${LIB_SUBPROJECT}
-        ${LIB_SUBPROJECT_INCLUDE})
+        LIB_NAME
+        LIB_NAMES
+        LIB_PUBLIC_HEADER
+        LIB_GIT_REPO
+        LIB_SUBPROJECT
+        LIB_SUBPROJECT_INCLUDE)
+
     # If the library hasn't been included
     if (NOT TARGET ${LIB_NAME})
         # Find the package on our system
@@ -268,7 +276,7 @@ function(include_lib
         endif()
     else()
         message(STATUS "Configuring ${LIB_NAME} as a subproject")
-        if (EXISTS ${LIB_SUBPROJECT})
+        if (NOT EXISTS ${LIB_SUBPROJECT})
             set(SUBPROJECT_INCLUDE ${LIB_SUBPROJECT_INCLUDE}/${LIB_PUBLIC_HEADER})
             if (NOT ${USE_AS_SUBMODULE})
                 message(STATUS, "Configuring ${LIB_NAME} with FetchContent")
@@ -282,12 +290,12 @@ function(include_lib
                 # Include subproject headers
                 target_include_directories(${LIB_NAME} PUBLIC ${SUBPROJECT_INCLUDE})
                 set_target_properties(${LIB_NAME} PROPERTIES PUBLIC_HEADER ${SUBPROJECT_INCLUDE})
-            else()
-                message(STATUS, "Configuring ${LIB_NAME} as Git Submodule")
-                # Configure as local git submodule / subproject
-                # This builds the library from source (you'll need the library's required build deps)
-                add_subdirectory(${LIB_SUBPROJECT})
             endif()
+        else()
+            message(STATUS, "Configuring ${LIB_NAME} as Git Submodule")
+            # Configure as local git submodule / subproject
+            # This builds the library from source (you'll need the library's required build deps)
+            add_subdirectory(${LIB_SUBPROJECT})
         endif()
     endif()
 endfunction()
