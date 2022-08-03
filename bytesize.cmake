@@ -12,6 +12,9 @@
 # Given that you are using my cmake-modules here: https://github.com/jmdaemon/cmake-modules
 # Otherwise they must be installed on your system or configured as a subproject manually.
 
+# Required Import
+include(Library)
+
 # Library Variables 
 set(LIB_NAME bytesize)
 set(LIB_NAMES bytesize libbytesize)
@@ -22,65 +25,11 @@ set(LIB_GIT_REPO https://github.com/jmdaemon/bytesize)
 set(LIB_SUBPROJECT "${PROJECT_SOURCE_DIR}/subprojects/bytesize")
 set(LIB_SUBPROJECT_INCLUDE "${PROJECT_SOURCE_DIR}/subprojects/bytesize/include")
 
-# If the library hasn't been included
-if (NOT TARGET ${LIB_NAME})
-    message(STATUS "Finding library: ${LIB_NAME}")
-    # Find the package on our system
-    set(USR /usr/lib)
-    set(USR_LOCAL /usr/local/lib)
-    set(USR_INCLUDE /usr/include)
-
-    # Contains the directory to the public library's header
-    string(TOUPPER ${LIB_NAME} LIB_INCLUDE_NAME)
-
-    set(LIB_USR ${USR}/lib${LIB_NAME}.so)
-    set(LIB_LOCAL ${USR_LOCAL}/lib${LIB_NAME}.so)
-    set(LIB_INCLUDE  ${USR_INCLUDE}/${LIB_PUBLIC_HEADER})
-
-    if (EXISTS ${LIB_USR})
-        # Found under /usr/local/lib
-        message(STATUS "Found: ${LIB_USR}")
-        find_library(${LIB_NAME} NAMES ${LIB_NAMES} HINTS ${LIB_USR})
-        add_library(${LIB_NAME} SHARED IMPORTED GLOBAL)
-        set_target_properties(${LIB_NAME} PROPERTIES
-            IMPORTED_LOCATION ${LIB_USR}
-            PUBLIC_HEADER ${LIB_INCLUDE}) # Include public interface headers
-
-        # Set headers variable used for other projects
-        set(HEADERS_${LIB_INCLUDE_NAME} ${LIB_INCLUDE})
-
-    elseif(${LIB_LOCAL})
-        # Found under /usr/lib
-        message(STATUS "Found: ${LIB_LOCAL}")
-        find_library(${LIB_NAME} NAMES ${LIB_NAMES} HINTS ${LIB_LOCAL})
-        add_library(${LIB_NAME} SHARED IMPORTED GLOBAL)
-        set_target_properties(${LIB_NAME} PROPERTIES
-            IMPORTED_LOCATION ${LIB_LOCAL}
-            PUBLIC_HEADER ${LIB_INCLUDE})
-
-        set(HEADERS_${LIB_INCLUDE_NAME} ${LIB_INCLUDE})
-    endif()
-else()
-    message(STATUS "Configuring ${LIB_NAME} as a subproject")
-    if (EXISTS ${LIB_SUBPROJECT})
-        set(SUBPROJECT_INCLUDE ${LIB_SUBPROJECT_INCLUDE}/${LIB_PUBLIC_HEADER})
-        if (NOT ${USE_AS_SUBMODULE})
-            message(STATUS, "Configuring ${LIB_NAME} with FetchContent")
-            # Configure with FetchContent
-            FetchContent_Declare(${LIB_NAME}
-                GIT_REPOSITORY  ${LIB_GIT_REPO}
-                SOURCE_DIR      ${LIB_SUBPROJECT})
-
-            add_library(${LIB_NAME})
-            target_link_libraries(${LIB_NAME} PUBLIC ${LIB_NAME})
-            # Include subproject headers
-            target_include_directories(${LIB_NAME} PUBLIC ${SUBPROJECT_INCLUDE})
-            set_target_properties(${LIB_NAME} PROPERTIES PUBLIC_HEADER ${SUBPROJECT_INCLUDE})
-        else()
-            message(STATUS, "Configuring ${LIB_NAME} as Git Submodule")
-            # Configure as local git submodule / subproject
-            # This builds the library from source (you'll need the library's required build deps)
-            add_subdirectory(${LIB_SUBPROJECT})
-        endif()
-    endif()
-endif()
+# Include bytesize
+include_lib(
+        ${LIB_NAME}
+        ${LIB_NAMES}
+        ${LIB_PUBLIC_HEADER}
+        ${LIB_GIT_REPO}
+        ${LIB_SUBPROJECT}
+        ${LIB_SUBPROJECT_INCLUDE})
