@@ -57,13 +57,99 @@ function(make_library)
         FILES ${LIB_SRC_GROUP_FILES})
 endfunction()
 
-# Builds both a shared and a static library target
+#### make_lib
+function(make_lib)
+    # make_lib - Similar to make_library except with slightly less options
+    set(ARG_PREFIX LIB)
+    set(_OPTIONS_ARGS )
+    set(_ONE_VALUE_ARGS NAME TYPE HDR)
+    set(_MULTI_VALUE_ARGS HDRS SRCS DEPS)
+    cmake_parse_arguments(${ARG_PREFIX} "${_OPTIONS_ARGS}" "${_ONE_VALUE_ARGS}" "${_MULTI_VALUE_ARGS}" ${ARGN})
+
+    # Suffix static libs with _static
+    if(${LIB_TYPE} STREQUAL STATIC)
+        set(TARGET ${LIB_NAME}_static)
+    elseif(${LIB_TYPE} STREQUAL SHARED)
+        set(TARGET ${LIB_NAME})
+    endif()
+
+    # Build library
+    set(LIB_NAME ${TARGET})
+    add_library(${LIB_NAME}
+        ${LIB_TYPE}
+        ${LIB_SRCS})
+    target_include_directories(${LIB_NAME} PUBLIC ${LIB_HDRS})
+    if (EXISTS ${LIB_HDR})
+        set_target_properties(${LIB_NAME} PROPERTIES PUBLIC_HEADER ${LIB_HDR})
+    endif()
+    target_link_libraries(${LIB_NAME} PRIVATE ${LIB_DEPS})
+endfunction()
+
+#### make_ssl
+function(make_ssl)
+    # make_ssl - Make static and shared libraries
+    set(ARG_PREFIX LIB)
+    set(_OPTIONS_ARGS )
+    set(_ONE_VALUE_ARGS NAME HDR)
+    set(_MULTI_VALUE_ARGS HDRS SRCS DEPS)
+    cmake_parse_arguments(${ARG_PREFIX} "${_OPTIONS_ARGS}" "${_ONE_VALUE_ARGS}" "${_MULTI_VALUE_ARGS}" ${ARGN})
+
+    # Suffix static libs with _static
+    #if(${LIB_TYPE} STREQUAL STATIC)
+        #set(TARGET ${LIB_NAME}_static)
+    #elseif(${LIB_TYPE} STREQUAL SHARED)
+        #set(TARGET ${LIB_NAME})
+    #endif()
+
+    # Build library
+    #set(LIB_NAME ${TARGET})
+    #add_library(${LIB_NAME}
+        #${LIB_TYPE}
+        #${LIB_SRCS})
+    #target_include_directories(${LIB_NAME} PUBLIC ${LIB_HDRS})
+    #set_target_properties(${LIB_NAME} PROPERTIES PUBLIC_HEADER ${LIB_HDR})
+    #target_link_libraries(${LIB_NAME} PRIVATE ${LIB_DEPS})
+
+    set(LIB_TYPES SHARED STATIC)
+    foreach(LIB_TYPE ${LIB_TYPES})
+        make_lib(
+            NAME ${LIB_NAME}
+            TYPE ${LIB_TYPE}
+            HDRS ${LIB_HDRS}
+            HDR ${LIB_HDR}
+            SRCS ${LIB_SRCS}
+            DEPS ${LIB_DEPS})
+    endforeach()
+endfunction()
+
+#### make_static_shared_lib
 function(make_static_shared_lib)
-    # Set arguments
+    # Builds both shared, static libraries without specifying ${SRC_GROUP_FILES}
     set(ARG_PREFIX LIB)
     set(_OPTIONS_ARGS )
     set(_ONE_VALUE_ARGS NAME CSTANDARD)
-    set(_MULTI_VALUE_ARGS HEADERS SOURCES DEPS SRC_GROUP_FILES)
+    set(_MULTI_VALUE_ARGS HEADERS SOURCES DEPS)
+    cmake_parse_arguments(${ARG_PREFIX} "${_OPTIONS_ARGS}" "${_ONE_VALUE_ARGS}" "${_MULTI_VALUE_ARGS}" ${ARGN})
+    set(LIB_TYPES SHARED STATIC)
+
+    foreach(LIB_TYPE ${LIB_TYPES})
+        make_library(
+            NAME "${LIB_NAME}"
+            TYPE ${LIB_TYPE}
+            CSTANDARD "${LIB_CSTANDARD}"
+            HEADERS "${LIB_HEADERS}"
+            SOURCES "${LIB_SOURCES}"
+            DEPS "${LIB_DEPS}")
+    endforeach()
+endfunction()
+
+#### make_static_shared_lib
+function(make_static_shared_lib)
+    # Builds both a shared and a static library target
+    set(ARG_PREFIX LIB)
+    set(_OPTIONS_ARGS )
+    set(_ONE_VALUE_ARGS NAME)
+    set(_MULTI_VALUE_ARGS HEADERS SOURCES DEPS)
     cmake_parse_arguments(${ARG_PREFIX} "${_OPTIONS_ARGS}" "${_ONE_VALUE_ARGS}" "${_MULTI_VALUE_ARGS}" ${ARGN})
     set(LIB_TYPES SHARED STATIC)
 
@@ -80,13 +166,13 @@ function(make_static_shared_lib)
 endfunction()
 
 # Importing libraries & external libraries
-
-# Import a library that has already been built
 function(import_library)
+    # import_library - Import a library that has already been built
     # Set make_library arguments
     set(ARG_PREFIX LIB)
     set(_OPTIONS_ARGS )
     set(_ONE_VALUE_ARGS NAME TYPE FILE)
+    #set(_MULTI_VALUE_ARGS HEADERS SOURCE_DIR DEPS)
     set(_MULTI_VALUE_ARGS SOURCE_DIR)
     cmake_parse_arguments(${ARG_PREFIX} "${_OPTIONS_ARGS}" "${_ONE_VALUE_ARGS}" "${_MULTI_VALUE_ARGS}" ${ARGN})
 
@@ -105,15 +191,17 @@ function(import_library)
     add_library(${LIB_NAME} ${LIB_TYPE} IMPORTED GLOBAL)
     set_target_properties(${LIB_NAME} PROPERTIES
         IMPORTED_LOCATION "${LIB_FILE_PATH}")
-
+    #target_include_directories(${LIB_NAME} PUBLIC ${LIB_HEADERS})
+    #target_link_libraries(${LIB_NAME} PRIVATE ${LIB_DEPS})
 endfunction()
 
-# Imports a shared or static library into a CMake Project
 function(import_external_library)
+    # import_external_library - Imports a shared or static library into a CMake Project
     # Set make_library arguments
     set(ARG_PREFIX LIB)
     set(_OPTIONS_ARGS )
     set(_ONE_VALUE_ARGS NAME TYPE)
+    #set(_MULTI_VALUE_ARGS HEADERS SOURCE_DIR PATH FILE DEPS)
     set(_MULTI_VALUE_ARGS HEADERS SOURCE_DIR PATH FILE)
     cmake_parse_arguments(${ARG_PREFIX} "${_OPTIONS_ARGS}" "${_ONE_VALUE_ARGS}" "${_MULTI_VALUE_ARGS}" ${ARGN})
     
@@ -126,4 +214,6 @@ function(import_external_library)
     set_property(
         TARGET ${LIB_NAME}
         PROPERTY INTERFACE_INCLUDE_DIRECTORIES ${LIB_HEADERS})
+    #target_include_directories(${LIB_NAME} PUBLIC ${LIB_HEADERS})
+    #target_link_libraries(${LIB_NAME} PRIVATE ${LIB_DEPS})
 endfunction()
