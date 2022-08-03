@@ -237,7 +237,9 @@ function(include_lib
         LIB_PUBLIC_HEADER
         LIB_GIT_REPO
         LIB_SUBPROJECT
-        LIB_SUBPROJECT_INCLUDE)
+        LIB_SUBPROJECT_INCLUDE
+        LIB_SUBPROJECT_DIR
+        )
 
     # If the library hasn't been included
     if (NOT TARGET ${LIB_NAME})
@@ -249,7 +251,6 @@ function(include_lib
 
         set(LIB_USR ${USR}/lib${LIB_NAME}.so)
         set(LIB_LOCAL ${USR_LOCAL}/lib${LIB_NAME}.so)
-        set(LIB_INCLUDE  ${USR_INCLUDE}/${LIB_PUBLIC_HEADER})
 
         if (EXISTS ${LIB_USR})
             # Found under /usr/local/lib
@@ -277,13 +278,20 @@ function(include_lib
     else()
         message(STATUS "Configuring ${LIB_NAME} as a subproject")
         if (NOT EXISTS ${LIB_SUBPROJECT})
-            set(SUBPROJECT_INCLUDE ${LIB_SUBPROJECT_INCLUDE}/${LIB_PUBLIC_HEADER})
+            # If the header exists in include/some_dir, include the public header there
+            if (EXISTS ${LIB_SUBPROJECT_DIR})
+                set(SUBPROJECT_INCLUDE ${LIB_SUBPROJECT_INCLUDE}/${LIB_SUBPROJECT_DIR}/${LIB_PUBLIC_HEADER})
+            else()
+                set(SUBPROJECT_INCLUDE ${LIB_SUBPROJECT_INCLUDE}/${LIB_PUBLIC_HEADER})
+            endif()
+
             if (NOT ${USE_AS_SUBMODULE})
                 message(STATUS, "Configuring ${LIB_NAME} with FetchContent")
                 # Configure with FetchContent
                 FetchContent_Declare(${LIB_NAME}
                     GIT_REPOSITORY  ${LIB_GIT_REPO}
                     SOURCE_DIR      ${LIB_SUBPROJECT})
+                
 
                 add_library(${LIB_NAME})
                 target_link_libraries(${LIB_NAME} PUBLIC ${LIB_NAME})
