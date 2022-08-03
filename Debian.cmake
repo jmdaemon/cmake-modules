@@ -39,4 +39,9 @@ set(CPACK_GENERATOR "DEB;TGZ;ZIP")
 
 set(CPACK_DEBIAN_PACKAGE_DEPENDS ${DEB_DEPENDS})
 
+set(CPACK_SOURCE_IGNORE_FILES
+    /dist
+    /.*build.*
+    /\\\\.DS_Store)
+
 include(CPack)
