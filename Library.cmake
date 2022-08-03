@@ -242,7 +242,7 @@ function(include_lib
     # If the library hasn't been included
     if (NOT TARGET ${LIB_NAME})
         # Find the package on our system
-        message(STATUS "Finding library: ${LIB_NAME}")
+        message(STATUS "Finding library on system: ${LIB_NAME}")
 
         # Contains the directory to the public library's header
         string(TOUPPER ${LIB_NAME} LIB_INCLUDE_NAME)
@@ -263,7 +263,7 @@ function(include_lib
             # Set headers variable used for other projects
             set(HEADERS_${LIB_INCLUDE_NAME} ${LIB_INCLUDE})
 
-        elseif(${LIB_LOCAL})
+        elseif(EXISTS ${LIB_LOCAL})
             # Found under /usr/lib
             message(STATUS "Found: ${LIB_LOCAL}")
             find_library(${LIB_NAME} NAMES ${LIB_NAMES} HINTS ${LIB_LOCAL})
