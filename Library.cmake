@@ -246,7 +246,7 @@ function(include_lib
         # Find the package on our system
         message(STATUS "Finding library on system: ${LIB_NAME}")
 
-        # Contains the directory to the public library's header
+        # Sets the variable name containing the directory to the library's header
         string(TOUPPER ${LIB_NAME} LIB_INCLUDE_NAME)
 
         set(LIB_USR ${USR}/lib${LIB_NAME}.so)
@@ -288,7 +288,7 @@ function(include_lib
             endif()
 
             if (NOT ${USE_AS_SUBMODULE})
-                message(STATUS, "Configuring ${LIB_NAME} with FetchContent")
+                message(STATUS "Configuring ${LIB_NAME} with FetchContent")
                 # Configure with FetchContent
                 FetchContent_Declare(${LIB_NAME}
                     GIT_REPOSITORY  ${LIB_GIT_REPO}
@@ -302,7 +302,7 @@ function(include_lib
                 set_target_properties(${LIB_NAME} PROPERTIES PUBLIC_HEADER ${SUBPROJECT_INCLUDE})
             endif()
         else()
-            message(STATUS, "Configuring ${LIB_NAME} as Git Submodule")
+            message(STATUS "Configuring ${LIB_NAME} as Git Submodule")
             # Configure as local git submodule / subproject
             # This builds the library from source (you'll need the library's required build deps)
             add_subdirectory(${LIB_SUBPROJECT})
