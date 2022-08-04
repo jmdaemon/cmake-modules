@@ -228,31 +228,34 @@ function(import_external_library)
 endfunction()
 
 # include_lib
-#function(include_lib
-        #${LIB_NAME}
-        #${LIB_NAMES}
-        #${LIB_PUBLIC_HEADER}
-        #${LIB_GIT_REPO}
-        #${LIB_SUBPROJECT}
-        #${LIB_SUBPROJECT_INCLUDE})
-function(include_lib
-        LIB_NAME
-        LIB_NAMES
-        LIB_PUBLIC_HEADER
-        LIB_GIT_REPO
-        LIB_SUBPROJECT
-        LIB_SUBPROJECT_INCLUDE
-        LIB_SUBPROJECT_DIR)
+function(include_lib)
+
+    # Parse custom args
+    # Use LIB_ prefix for variables
+    set(ARG_PREFIX LIB)
+    set(_OPTIONS_ARGS)
+    set(_ONE_VALUE_ARGS NAME PUB REPO SP SPI SPD)
+    #set(_MULTI_VALUE_ARGS HEADERS SOURCE_DIR PATH FILE DEPS)
+    #set(_MULTI_VALUE_ARGS NAMES HEADERS SOURCE_DIR PATH FILE)
+    set(_MULTI_VALUE_ARGS NAMES)
+    cmake_parse_arguments(${ARG_PREFIX} "${_OPTIONS_ARGS}" "${_ONE_VALUE_ARGS}" "${_MULTI_VALUE_ARGS}" ${ARGN})
+
+    # Alias var names
+    #set(LIB_PUBLIC_HEADER "${LIB_PUB}")
+    #set(LIB_GIT_REPO "${LIB_REPO}")
+    #set(LIB_SUBPROJECT "${LIB_SP}")
+    #set(LIB_SUBPROJECT_INCLUDE "${LIB_SPI}")
+    #set(LIB_SUBPROJECT_DIR "${LIB_SPD}")
 
     # Log function parameters
     log_debug("=== ${LIB_NAME} Debug Info ===")
     log_debug("LIB_NAME                 : ${LIB_NAME}")
     log_debug("LIB_NAMES                : ${LIB_NAMES}")
-    log_debug("LIB_PUBLIC_HEADER        : ${LIB_PUBLIC_HEADER}")
-    log_debug("LIB_GIT_REPO             : ${LIB_GIT_REPO}")
-    log_debug("LIB_SUBPROJECT           : ${LIB_SUBPROJECT}")
-    log_debug("LIB_SUBPROJECT_INCLUDE   : ${LIB_SUBPROJECT_INCLUDE}")
-    log_debug("LIB_SUBPROJECT_DIR       : ${LIB_SUBPROJECT_DIR}")
+    log_debug("LIB_PUBLIC_HEADER        : ${LIB_PUB}")
+    log_debug("LIB_GIT_REPO             : ${LIB_REPO}")
+    log_debug("LIB_SUBPROJECT           : ${LIB_SP}")
+    log_debug("LIB_SUBPROJECT_INCLUDE   : ${LIB_SPI}")
+    log_debug("LIB_SUBPROJECT_DIR       : ${LIB_SPD}")
     log_debug("=== End of Debug Info ===")
 
     # If the library hasn't been included
@@ -265,11 +268,12 @@ function(include_lib
 
         set(LIB_USR ${USR}/lib${LIB_NAME}.so)
         set(LIB_LOCAL ${USR_LOCAL}/lib${LIB_NAME}.so)
-        set(LIB_INCLUDE  ${USR_INCLUDE}/${LIB_PUBLIC_HEADER})
+        set(LIB_INCLUDE  ${USR_INCLUDE}/${LIB_PUB})
 
-        log_info(${LIB_USR})
-        log_info(${LIB_LOCAL})
-        log_info(${LIB_INCLUDE})
+        log_debug("Library Paths:")
+        log_debug(${LIB_USR})
+        log_debug(${LIB_LOCAL})
+        log_debug(${LIB_INCLUDE})
 
         if (EXISTS ${LIB_USR})
             # Found under /usr/local/lib
@@ -278,10 +282,11 @@ function(include_lib
             add_library(${LIB_NAME} SHARED IMPORTED GLOBAL)
             set_target_properties(${LIB_NAME} PROPERTIES
                 IMPORTED_LOCATION ${LIB_USR}
-                PUBLIC_HEADER ${LIB_INCLUDE}) # Include public interface headers
+                PUB ${LIB_INCLUDE}) # Include public interface headers
 
             # Set headers variable used for other projects
             set(HEADERS_${LIB_INCLUDE_NAME} ${LIB_INCLUDE})
+            log_debug("HEADERS_${LIB_INCLUDE_NAME}: ${LIB_INCLUDE}")
             return() # Exit early
 
         elseif(EXISTS ${LIB_LOCAL})
@@ -291,23 +296,24 @@ function(include_lib
             add_library(${LIB_NAME} SHARED IMPORTED GLOBAL)
             set_target_properties(${LIB_NAME} PROPERTIES
                 IMPORTED_LOCATION ${LIB_LOCAL}
-                PUBLIC_HEADER ${LIB_INCLUDE})
+                PUB ${LIB_INCLUDE})
 
             set(HEADERS_${LIB_INCLUDE_NAME} ${LIB_INCLUDE})
+            log_debug("HEADERS_${LIB_INCLUDE_NAME}: ${LIB_INCLUDE}")
             return() # Exit early
         endif()
 
         # Assume that we're configuring a subproject
         message(STATUS "Configuring ${LIB_NAME} as a subproject")
 
-        log_info("SUBPROJECT DEST: ${LIB_SUBPROJECT}")
-        if (NOT EXISTS ${LIB_SUBPROJECT})
+        log_info("SUBPROJECT DEST: ${LIB_SP}")
+        if (NOT EXISTS ${LIB_SP})
             # If the header exists in include/some_dir, include the public header there
-            #if ((EXISTS ${LIB_SUBPROJECT}) AND (NOT ${LIB_SUBPROJECT_DIR} STREQUAL ""))
-            if (NOT (${LIB_SUBPROJECT_DIR} STREQUAL ""))
-                set(SUBPROJECT_INCLUDE ${LIB_SUBPROJECT_INCLUDE}/${LIB_SUBPROJECT_DIR}/${LIB_PUBLIC_HEADER})
+            #if ((EXISTS ${LIB_SP}) AND (NOT ${LIB_SPD} STREQUAL ""))
+            if (NOT ${LIB_SPD} STREQUAL "")
+                set(SUBPROJECT_INCLUDE ${LIB_SPI}/${LIB_SPD}/${LIB_PUB})
             else()
-                set(SUBPROJECT_INCLUDE ${LIB_SUBPROJECT_INCLUDE}/${LIB_PUBLIC_HEADER})
+                set(SUBPROJECT_INCLUDE ${LIB_SPI}/${LIB_PUB})
             endif()
             log_info("SUBPROJECT_INCLUDE: ${SUBPROJECT_INCLUDE}")
 
@@ -315,23 +321,23 @@ function(include_lib
                 message(STATUS "Configuring ${LIB_NAME} with FetchContent")
                 # Configure with FetchContent
                 FetchContent_Declare(${LIB_NAME}
-                    GIT_REPOSITORY  ${LIB_GIT_REPO}
-                    SOURCE_DIR      ${LIB_SUBPROJECT})
+                    GIT_REPOSITORY  ${LIB_REPO}
+                    SOURCE_DIR      ${LIB_SP})
                 
-                #add_subdirectory(${LIB_SUBPROJECT})
+                #add_subdirectory(${LIB_SP})
 
                 add_library(${LIB_NAME})
                 target_link_libraries(${LIB_NAME} PUBLIC ${LIB_NAME})
                 # Include subproject headers
                 target_include_directories(${LIB_NAME} PUBLIC ${SUBPROJECT_INCLUDE})
-                set_target_properties(${LIB_NAME} PROPERTIES PUBLIC_HEADER ${SUBPROJECT_INCLUDE})
+                set_target_properties(${LIB_NAME} PROPERTIES PUB ${SUBPROJECT_INCLUDE})
                 return()
             endif()
         else()
             message(STATUS "Configuring ${LIB_NAME} as Git Submodule")
             # Configure as local git submodule / subproject
             # This builds the library from source (you'll need the library's required build deps)
-            add_subdirectory(${LIB_SUBPROJECT})
+            add_subdirectory(${LIB_SP})
             return()
         endif()
     endif()
