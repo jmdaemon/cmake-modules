@@ -12,8 +12,9 @@
 # Given that you are using my cmake-modules here: https://github.com/jmdaemon/cmake-modules
 # Otherwise they must be installed on your system or configured as a subproject manually.
 
-# Required Import
 include(Library)
+
+set(USE_AS_SUBMODULE ON)
 
 # Library Variables 
 set(LIB_NAME bytesize)
@@ -26,10 +27,11 @@ set(LIB_SUBPROJECT "${PROJECT_SOURCE_DIR}/subprojects/bytesize")
 set(LIB_SUBPROJECT_INCLUDE "${PROJECT_SOURCE_DIR}/subprojects/bytesize/include")
 set(LIB_SUBPROJECT_DIR "")
 
-include_lib(NAME LIB_NAME
-    NAMES LIB_NAMES
-    PUB LIB_PUBLIC_HEADER
-    REPO LIB_GIT_REPO
-    SP LIB_SUBPROJECT
-    SPI LIB_SUBPROJECT_INCLUDE
-    SPD LIB_SUBPROJECT_DIR)
+include_lib(
+    NAME ${LIB_NAME}
+    NAMES ${LIB_NAMES}
+    PUB ${LIB_PUBLIC_HEADER}
+    REPO ${LIB_GIT_REPO}
+    SP ${LIB_SUBPROJECT}
+    SPI ${LIB_SUBPROJECT_INCLUDE}
+    SPD ${LIB_SUBPROJECT_DIR})
