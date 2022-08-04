@@ -11,8 +11,8 @@ include(Utilities)
 
 include(ExternalProject)
 
-# Enable logging
-set_property(GLOBAL PROPERTY ENABLE_LOGGING ON)
+# Turn off log statements by default
+set_property(GLOBAL PROPERTY ENABLE_LOGGING OFF)
 
 ## Global constants
 set(USR /usr/lib)
@@ -238,6 +238,10 @@ endfunction()
 # include_lib
 function(include_lib)
     # include_lib - Include a library through a variety of methods
+    # `include_lib()` Allows you to include your library as
+    # 1. A package found on your system.
+    # 2. A FetchContent dependency
+    # 3. A Git Submodule
 
     # Parse custom args
     # Uses LIB_ prefix for variables
@@ -256,7 +260,6 @@ function(include_lib)
     log_debug("LIB_SUBPROJECT           : ${LIB_SP}")
     log_debug("LIB_SUBPROJECT_INCLUDE   : ${LIB_SPI}")
     log_debug("LIB_SUBPROJECT_DIR       : ${LIB_SPD}")
-    #log_debug("=== End of Debug Info ===")
 
     # If the library hasn't been included
     if (NOT TARGET ${LIB_NAME})
@@ -272,10 +275,10 @@ function(include_lib)
         set(LIB_LOCAL_INCLUDE  ${USR_LOCAL_INCLUDE}/${LIB_PUB})
 
         log_debug("Library Paths:")
-        log_debug("LIB_USR              : ${LIB_USR}")
-        log_debug("LIB_LOCAL            : ${LIB_LOCAL}")
-        log_debug("LIB_INCLUDE          : ${LIB_INCLUDE}")
-        log_debug("LIB_LOCAL_INCLUDE    : ${LIB_LOCAL_INCLUDE}")
+        log_debug("LIB_USR                  : ${LIB_USR}")
+        log_debug("LIB_LOCAL                : ${LIB_LOCAL}")
+        log_debug("LIB_INCLUDE              : ${LIB_INCLUDE}")
+        log_debug("LIB_LOCAL_INCLUDE        : ${LIB_LOCAL_INCLUDE}")
 
         if (EXISTS ${LIB_USR})
             # Found under /usr/local/lib
@@ -310,7 +313,6 @@ function(include_lib)
 
         if (NOT EXISTS ${LIB_SP})
             # If the header exists in include/some_dir, include the public header there
-            #if ((EXISTS ${LIB_SP}) AND (NOT ${LIB_SPD} STREQUAL ""))
             if (NOT ${LIB_SPD} STREQUAL "")
                 set(SUBPROJECT_INCLUDE ${LIB_SPI}/${LIB_SPD}/${LIB_PUB})
             else()
@@ -319,24 +321,11 @@ function(include_lib)
             log_debug("SUBPROJECT_INCLUDE: ${SUBPROJECT_INCLUDE}")
 
             if (NOT ${USE_AS_SUBMODULE})
-                message(STATUS "Configuring ${LIB_NAME} with FetchContent")
                 # Configure with FetchContent
+                message(STATUS "Configuring ${LIB_NAME} with FetchContent")
                 FetchContent_Declare(${LIB_NAME}
                     GIT_REPOSITORY  ${LIB_REPO})
                 FetchContent_MakeAvailable(${LIB_NAME})
-                    #SOURCE_DIR      ${LIB_SP})
-                
-                #add_subdirectory(${LIB_SP})
-                #ExternalProject_Get_Property(${LIB_NAME} source_dir)
-                #add_subdirectory(${source_dir})
-                FetchContent_GetProperties(${LIB_NAME} SOURCE_DIR LIB_SRC_DIR)
-                add_subdirectory(${LIB_SRC_DIR})
-
-                #add_library(${LIB_NAME})
-                #target_link_libraries(${LIB_NAME} PUBLIC ${LIB_NAME})
-                ## Include subproject headers
-                #target_include_directories(${LIB_NAME} PUBLIC ${SUBPROJECT_INCLUDE})
-                #set_target_properties(${LIB_NAME} PROPERTIES PUB ${SUBPROJECT_INCLUDE})
                 return()
             endif()
         else()
