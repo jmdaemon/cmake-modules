@@ -251,6 +251,7 @@ function(include_lib
 
         set(LIB_USR ${USR}/lib${LIB_NAME}.so)
         set(LIB_LOCAL ${USR_LOCAL}/lib${LIB_NAME}.so)
+        set(LIB_INCLUDE  ${USR_INCLUDE}/${LIB_PUBLIC_HEADER})
 
         if (EXISTS ${LIB_USR})
             # Found under /usr/local/lib
@@ -279,7 +280,8 @@ function(include_lib
         message(STATUS "Configuring ${LIB_NAME} as a subproject")
         if (NOT EXISTS ${LIB_SUBPROJECT})
             # If the header exists in include/some_dir, include the public header there
-            if (EXISTS ${LIB_SUBPROJECT_DIR})
+            #if ((EXISTS ${LIB_SUBPROJECT}) AND (NOT ${LIB_SUBPROJECT_DIR} STREQUAL ""))
+            if (NOT (${LIB_SUBPROJECT_DIR} STREQUAL ""))
                 set(SUBPROJECT_INCLUDE ${LIB_SUBPROJECT_INCLUDE}/${LIB_SUBPROJECT_DIR}/${LIB_PUBLIC_HEADER})
             else()
                 set(SUBPROJECT_INCLUDE ${LIB_SUBPROJECT_INCLUDE}/${LIB_PUBLIC_HEADER})
