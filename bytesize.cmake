@@ -21,17 +21,15 @@ set(LIB_NAMES bytesize libbytesize)
 set(LIB_PUBLIC_HEADER bytesize.h)
 set(LIB_GIT_REPO https://github.com/jmdaemon/bytesize)
 
-## Subproject variables
+# Subproject variables
 set(LIB_SUBPROJECT "${PROJECT_SOURCE_DIR}/subprojects/bytesize")
 set(LIB_SUBPROJECT_INCLUDE "${PROJECT_SOURCE_DIR}/subprojects/bytesize/include")
 set(LIB_SUBPROJECT_DIR "")
 
-# Include bytesize
-include_lib(
-        ${LIB_NAME}
-        ${LIB_NAMES}
-        ${LIB_PUBLIC_HEADER}
-        ${LIB_GIT_REPO}
-        ${LIB_SUBPROJECT}
-        ${LIB_SUBPROJECT_INCLUDE}
-        ${LIB_SUBPROJECT_DIR})
+include_lib(NAME LIB_NAME
+    NAMES LIB_NAMES
+    PUB LIB_PUBLIC_HEADER
+    REPO LIB_GIT_REPO
+    SP LIB_SUBPROJECT
+    SPI LIB_SUBPROJECT_INCLUDE
+    SPD LIB_SUBPROJECT_DIR)
