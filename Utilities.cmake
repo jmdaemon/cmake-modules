@@ -43,6 +43,15 @@ macro(tern var boolean value1 value2)
     endif()
 endmacro()
 
+macro(ternop boolean op1 op2)
+    if(${boolean})
+        cmake_language(EVAL CODE "${op1}")
+    else()
+        cmake_language(EVAL CODE "${op2}")
+    endif()
+endmacro()
+
+
 # Debugging 
 
 ## Logging functions
