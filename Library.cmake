@@ -1,4 +1,4 @@
-#
+#/usr/local/lib/libutility.
 # Library.cmake - Provides functions to create and use libraries 
 #
 
@@ -260,7 +260,7 @@ function(include_lib)
     log_debug("LIB_SUBPROJECT_DIR       : ${LIB_SPD}")
 
     # If the library hasn't been included
-    if ((NOT TARGET ${LIB_NAME}) OR (NOT TARGET "${TARG_NAME}")) 
+    if ((NOT TARGET ${LIB_NAME}) OR ((NOT TARGET "${TARG_NAME}") AND (NOT "${TARG_NAME}" STREQUAL ""))) 
         # Find the package on our system
         message(STATUS "Finding library on system: ${LIB_NAME}")
 
@@ -268,13 +268,29 @@ function(include_lib)
         string(TOUPPER ${LIB_NAME} LIB_INCLUDE_NAME)
 
         # Include static or shared libraries
-        set(bool ("${LIB_TYPE}" STREQUAL STATIC))
-        tern(SUFFIX bool a so)
-        set(LIB_USR ${USR}/lib${LIB_NAME}.${SUFFIX})
-        set(LIB_LOCAL ${USR_LOCAL}/lib${LIB_NAME}.${SUFFIX})
+        # If the string is null, default to "so"
+        # if the string is not null a
+        #set(bool1 ""${LIB_TYPE}" STREQUAL STATIC")
+        #set(bool2 "(NOT "${LIB_TYPE}" STREQUAL "")")
+        #set(bool ("${bool1}" AND "${bool2}"))
+        #set(bool (NOT "${LIB_TYPE}" STREQUAL "") AND ("${LIB_TYPE}" STREQUAL "STATIC"))
+        #set(bool (NOT "${LIB_TYPE}" STREQUAL "") AND ("${LIB_TYPE}" STREQUAL STATIC) CACHE BOOL "Toggle thing")
+        #set(bool (NOT "${LIB_TYPE}" STREQUAL "") AND ("${LIB_TYPE}" STREQUAL STATIC) CACHE BOOL "Toggle thing")
+        #set(bool ((NOT "${LIB_TYPE}" STREQUAL "") AND ("${LIB_TYPE}" STREQUAL "STATIC")))
+        #set(bool "${LIB_TYPE}" STREQUAL "")
+        set(bool "NOT \"${LIB_TYPE}\" STREQUAL \"\"")
+        #set(bool (NOT "${LIB_TYPE}" STREQUAL ""))
+        #log_info("bool1: ${bool1}")
+        #log_info("bool2: ${bool2}")
+        log_info("${bool}")
+        ternm(LIB_SUFFIX "${bool}" "a" "so")
+        set(LIB_USR ${USR}/lib${LIB_NAME}.${LIB_SUFFIX})
+        set(LIB_LOCAL ${USR_LOCAL}/lib${LIB_NAME}.${LIB_SUFFIX})
 
         # If the header exists in include/some_dir, include the public header there
+        #set(bool "NOT \"${LIB_HDRD}\" STREQUAL \"\"")
         set(bool (NOT "${LIB_HDRD}" STREQUAL ""))
+        log_info("${bool}")
         tern(HDRD bool "${LIB_HDRD}/" "")
         set(LIB_INCLUDE ${USR_INCLUDE}/${HDRD}${LIB_PUB})
         set(LIB_LOCAL_INCLUDE  ${USR_LOCAL_INCLUDE}/${HDRD}${LIB_PUB})
