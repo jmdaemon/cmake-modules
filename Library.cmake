@@ -3,19 +3,14 @@
 #
 
 # Imports
-## Parse lists of function arguments
-include(CMakeParseArguments)
-
-## Includes color, logging statements
-include(Utilities)
-
-include(ExternalProject)
+include(CMakeParseArguments)    # Parse lists of function arguments
+include(Utilities)              # Includes color, logging statements
 
 ## Global constants
-set(USR /usr/lib)
-set(USR_LOCAL /usr/local/lib)
-set(USR_INCLUDE /usr/include)
-set(USR_LOCAL_INCLUDE /usr/local/include)
+set(USR /usr/lib CACHE INTERNAL "System-wide installed libraries directory")
+set(USR_LOCAL /usr/local/lib CACHE INTERNAL "Locally installed libraries")
+set(USR_INCLUDE /usr/include CACHE INTERNAL "System-wide installed library headers")
+set(USR_LOCAL_INCLUDE /usr/local/include CACHE INTERNAL "Locally installed library headers")
 
 # Create a library from c/cpp sources
 function(make_library)
