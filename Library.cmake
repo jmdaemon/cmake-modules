@@ -252,6 +252,9 @@ function(include_lib)
     set(_MULTI_VALUE_ARGS NAMES)
     cmake_parse_arguments(${ARG_PREFIX} "${_OPTIONS_ARGS}" "${_ONE_VALUE_ARGS}" "${_MULTI_VALUE_ARGS}" ${ARGN})
 
+    # Optional arguments:
+    # LIB_TYPE, LIB_HDRD, LIB_SPD
+
     # Log function parameters
     log_debug("=== ${LIB_NAME} Debug Info ===")
     log_debug("LIB_NAME                 : ${LIB_NAME}")
@@ -273,7 +276,7 @@ function(include_lib)
         string(TOUPPER ${LIB_NAME} LIB_INCLUDE_NAME)
 
         # Include static or shared libraries
-        if (${LIB_TYPE} STREQUAL STATIC)
+        if ("${LIB_TYPE}" STREQUAL STATIC)
             # Look for static library
             set(LIB_USR ${USR}/lib${LIB_NAME}.a)
             set(LIB_LOCAL ${USR_LOCAL}/lib${LIB_NAME}.a)
@@ -284,7 +287,7 @@ function(include_lib)
         endif()
 
         # If the header exists in include/some_dir, include the public header there
-        if (NOT ${LIB_HDRD} STREQUAL "")
+        if (NOT "${LIB_HDRD}" STREQUAL "")
             set(LIB_INCLUDE ${USR_INCLUDE}/${LIB_HDRD}/${LIB_PUB})
             set(LIB_LOCAL_INCLUDE  ${USR_LOCAL_INCLUDE}/${LIB_HDRD}/${LIB_PUB})
         else()
@@ -308,7 +311,7 @@ function(include_lib)
             message(STATUS "Found: ${LIB_USR}")
             find_library(${LIB_NAME} NAMES ${LIB_NAMES} HINTS ${LIB_USR})
 
-            if (${LIB_TYPE} STREQUAL STATIC)
+            if ("${LIB_TYPE}" STREQUAL STATIC)
                 add_library(${LIB_NAME} STATIC IMPORTED GLOBAL)
             else()
                 add_library(${LIB_NAME} SHARED IMPORTED GLOBAL)
@@ -328,7 +331,7 @@ function(include_lib)
             message(STATUS "Found: ${LIB_LOCAL}")
             find_library(${LIB_NAME} NAMES ${LIB_NAMES} HINTS ${LIB_LOCAL})
 
-            if (${LIB_TYPE} STREQUAL STATIC)
+            if ("${LIB_TYPE}" STREQUAL STATIC)
                 add_library(${LIB_NAME} STATIC IMPORTED GLOBAL)
             else()
                 add_library(${LIB_NAME} SHARED IMPORTED GLOBAL)
@@ -348,7 +351,7 @@ function(include_lib)
 
         if (NOT EXISTS ${LIB_SP})
             # If the header exists in include/some_dir, include the public header there
-            if (NOT ${LIB_SPD} STREQUAL "")
+            if (NOT "${LIB_SPD}" STREQUAL "")
                 set(SUBPROJECT_INCLUDE ${LIB_SPI}/${LIB_SPD}/${LIB_PUB})
             else()
                 set(SUBPROJECT_INCLUDE ${LIB_SPI}/${LIB_PUB})
