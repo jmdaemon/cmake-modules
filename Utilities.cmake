@@ -73,7 +73,11 @@ function(log_warn msg)
     log_msg("${Red}WARN${ColorReset} ${msg}" ${LOG_WARN})
 endfunction()
 
-function(debug variableName)
+function(log_error msg)
+    log_msg("${BoldRed}Error${ColorReset} ${msg}" ${LOG_ERROR})
+endfunction()
+
+function(printvar variableName)
     if (ENABLE_LOGGING)
         debug("${variableName}=\${${variableName}}")
     endif()
