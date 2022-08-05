@@ -83,7 +83,7 @@ function(lstarget)
     message(STATUS, "Headers Directory: ${TARGET_HEADERS}")
 endfunction()
 
-# Ternary Operator
+# Ternary Operators
 macro(ternm var boolean value1 value2)
     cmake_language(EVAL CODE "
     if (${boolean})
@@ -101,26 +101,6 @@ macro(ternm var boolean value1 value2)
 endmacro()
 
 function(tern var boolean value1 value2)
-    #if(EVAL ${boolean})
-    #if(${boolean})
-    #if("${${boolean}}")
-    #if({${boolean})
-
-    #if(${boolean})
-        #message(STATUS "Executing true branch")
-        #log_trace("Executing true branch")
-        #log_trace("var: ${var}")
-        #log_trace("boolean: ${boolean}")
-        #log_trace("value1: ${value1}")
-        #log_trace("value2: ${value2}")
-        #set(${var} ${value1})
-        #set("${var}" ${value1})
-        #set("${var}" value1)
-    #else()
-        #message(STATUS "Executing false branch")
-        ##set(${var} ${value2})
-        #set("${var}" value2)
-    #endif()
     cmake_language(EVAL CODE "
     if (${boolean})
         message(STATUS \"Executing true branch\")
@@ -143,6 +123,3 @@ function(ternop boolean op1 op2)
         cmake_language(EVAL CODE "${op2}")
     endif()
 endfunction()
-
-
-
