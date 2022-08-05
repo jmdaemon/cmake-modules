@@ -1,50 +1,22 @@
 # Utility C Library
-
-# Note that there are a few ways you can specify utility
-# 1. As a system-wide installed library "in /usr/local/lib/"
-# 2. As a subproject in subprojects/utility (requires you to build the library first)
-# 3. As a dependency to be built alongside the project code
-# Note that currently only 1-2 are supported for now
-
-# Imports
 include(Library)
 
-# If the library hasn't been imported/included in our project
-if (NOT TARGET utility)
-    # Include the library
-    set(UTILITY_LIB_SRC /usr/local/lib)
-    set(UTILITY_LIB_FILE libutility.so)
-    # Import only if the library was installed system wide
-    if (EXISTS "${UTILITY_LIB_SRC}/${UTILITY_LIB_FILE}")
-        import_library(
-            NAME utility
-            TYPE SHARED
-            FILE ${UTILITY_LIB_FILE}
-            SOURCE_DIR ${UTILITY_LIB_SRC})
+set(USE_AS_SUBMODULE OFF)
 
-    # If the library was not installed system wide
-    else()
-        # Configure the library as a subproject in our main repository
-        message(STATUS "\"libutility.so\" not found")
-        message(STATUS "Configuring utility as a subproject")
+# Library Variables 
+set(LIB_NAME utility)
+set(LIB_NAMES ${LIB_NAME} lib${LIB_NAME})
+set(LIB_PUBLIC_HEADER file.h)
+set(LIB_GIT_REPO https://github.com/jmdaemon/utility)
 
-        set(UTILITY utility)
-        set(UTILITY_SRC ${PROJECT_SOURCE_DIR}/subprojects/${UTILITY})
-        set(UTILITY_FILE ${UTILITY_SRC}/build/release/lib/lib${UTILITY}.so)
-        # If the generated library exists
-        if (EXISTS ${UTILITY_FILE})
-            # Import the shared library
-            # Note that this requires you to first generate the library
-            import_external_library(
-                NAME ${UTILITY}
-                TYPE SHARED
-                SOURCE_DIR ${UTILITY_SRC}
-                HEADERS ${UTILITY_SRC}/include
-                PATH ${UTILITY_FILE})
-        else()
-            # Fetch the git repository
-            # Specify some build commands
-            # Add the library
-        endif()
-    endif()
-endif()
+# Subproject variables
+set(LIB_SUBPROJECT ${PROJECT_SOURCE_DIR}/subprojects/utility)
+set(LIB_SUBPROJECT_INCLUDE ${PROJECT_SOURCE_DIR}/subprojects/utility/include)
+
+include_lib(
+    NAME ${LIB_NAME}
+    NAMES ${LIB_NAMES}
+    PUB ${LIB_PUBLIC_HEADER}
+    REPO ${LIB_GIT_REPO}
+    SP ${LIB_SUBPROJECT}
+    SPI ${LIB_SUBPROJECT_INCLUDE})
