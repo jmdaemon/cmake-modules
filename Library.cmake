@@ -12,7 +12,8 @@ include(Utilities)
 include(ExternalProject)
 
 # Turn off log statements by default
-set_property(GLOBAL PROPERTY ENABLE_LOGGING OFF)
+#set_property(GLOBAL PROPERTY ENABLE_LOGGING OFF)
+set_property(GLOBAL PROPERTY ENABLE_LOGGING ON)
 
 ## Global constants
 set(USR /usr/lib)
@@ -247,15 +248,17 @@ function(include_lib)
     # Uses LIB_ prefix for variables
     set(ARG_PREFIX LIB) # Don't append a '_' suffix to ARG_PREFIX (it breaks the rest of the parameters)
     set(_OPTIONS_ARGS)
-    set(_ONE_VALUE_ARGS NAME PUB REPO SP SPI SPD)
+    set(_ONE_VALUE_ARGS NAME TYPE PUB HDRD REPO SP SPI SPD)
     set(_MULTI_VALUE_ARGS NAMES)
     cmake_parse_arguments(${ARG_PREFIX} "${_OPTIONS_ARGS}" "${_ONE_VALUE_ARGS}" "${_MULTI_VALUE_ARGS}" ${ARGN})
 
     # Log function parameters
     log_debug("=== ${LIB_NAME} Debug Info ===")
     log_debug("LIB_NAME                 : ${LIB_NAME}")
+    log_debug("LIB_TYPE                 : ${LIB_TYPE}")
     log_debug("LIB_NAMES                : ${LIB_NAMES}")
     log_debug("LIB_PUBLIC_HEADER        : ${LIB_PUB}")
+    log_debug("LIB_HEADER_DIR           : ${LIB_HDRD}")
     log_debug("LIB_GIT_REPO             : ${LIB_REPO}")
     log_debug("LIB_SUBPROJECT           : ${LIB_SP}")
     log_debug("LIB_SUBPROJECT_INCLUDE   : ${LIB_SPI}")
@@ -269,10 +272,30 @@ function(include_lib)
         # Sets the variable name containing the directory to the library's header
         string(TOUPPER ${LIB_NAME} LIB_INCLUDE_NAME)
 
-        set(LIB_USR ${USR}/lib${LIB_NAME}.so)
-        set(LIB_LOCAL ${USR_LOCAL}/lib${LIB_NAME}.so)
-        set(LIB_INCLUDE  ${USR_INCLUDE}/${LIB_PUB})
-        set(LIB_LOCAL_INCLUDE  ${USR_LOCAL_INCLUDE}/${LIB_PUB})
+        # Include static or shared libraries
+        if (${LIB_TYPE} STREQUAL STATIC)
+            # Look for static library
+            set(LIB_USR ${USR}/lib${LIB_NAME}.a)
+            set(LIB_LOCAL ${USR_LOCAL}/lib${LIB_NAME}.a)
+        else()
+            # Default to dynamic library
+            set(LIB_USR ${USR}/lib${LIB_NAME}.so)
+            set(LIB_LOCAL ${USR_LOCAL}/lib${LIB_NAME}.so)
+        endif()
+
+        # If the header exists in include/some_dir, include the public header there
+        if (NOT ${LIB_HDRD} STREQUAL "")
+            set(LIB_INCLUDE ${USR_INCLUDE}/${LIB_HDRD}/${LIB_PUB})
+            set(LIB_LOCAL_INCLUDE  ${USR_LOCAL_INCLUDE}/${LIB_HDRD}/${LIB_PUB})
+        else()
+            set(LIB_INCLUDE  ${USR_INCLUDE}/${LIB_PUB})
+            set(LIB_LOCAL_INCLUDE  ${USR_LOCAL_INCLUDE}/${LIB_PUB})
+        endif()
+        log_debug("SUBPROJECT_INCLUDE: ${SUBPROJECT_INCLUDE}")
+
+
+        #set(LIB_INCLUDE  ${USR_INCLUDE}/${LIB_PUB})
+        #set(LIB_LOCAL_INCLUDE  ${USR_LOCAL_INCLUDE}/${LIB_PUB})
 
         log_debug("Library Paths:")
         log_debug("LIB_USR                  : ${LIB_USR}")
@@ -284,7 +307,13 @@ function(include_lib)
             # Found under /usr/local/lib
             message(STATUS "Found: ${LIB_USR}")
             find_library(${LIB_NAME} NAMES ${LIB_NAMES} HINTS ${LIB_USR})
-            add_library(${LIB_NAME} SHARED IMPORTED GLOBAL)
+
+            if (${LIB_TYPE} STREQUAL STATIC)
+                add_library(${LIB_NAME} STATIC IMPORTED GLOBAL)
+            else()
+                add_library(${LIB_NAME} SHARED IMPORTED GLOBAL)
+            endif()
+
             set_target_properties(${LIB_NAME} PROPERTIES
                 IMPORTED_LOCATION ${LIB_USR}
                 PUB ${LIB_INCLUDE}) # Include public interface headers
@@ -298,7 +327,13 @@ function(include_lib)
             # Found under /usr/lib
             message(STATUS "Found: ${LIB_LOCAL}")
             find_library(${LIB_NAME} NAMES ${LIB_NAMES} HINTS ${LIB_LOCAL})
-            add_library(${LIB_NAME} SHARED IMPORTED GLOBAL)
+
+            if (${LIB_TYPE} STREQUAL STATIC)
+                add_library(${LIB_NAME} STATIC IMPORTED GLOBAL)
+            else()
+                add_library(${LIB_NAME} SHARED IMPORTED GLOBAL)
+            endif()
+
             set_target_properties(${LIB_NAME} PROPERTIES
                 IMPORTED_LOCATION ${LIB_LOCAL}
                 PUB ${LIB_LOCAL_INCLUDE})
