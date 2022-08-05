@@ -11,10 +11,6 @@ include(Utilities)
 
 include(ExternalProject)
 
-# Turn off log statements by default
-#set_property(GLOBAL PROPERTY ENABLE_LOGGING OFF)
-set_property(GLOBAL PROPERTY ENABLE_LOGGING ON)
-
 ## Global constants
 set(USR /usr/lib)
 set(USR_LOCAL /usr/local/lib)
