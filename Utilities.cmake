@@ -40,28 +40,26 @@ endfunction()
 # Use the following to enable viewing logs
 # set(GLOBAL ENABLE_LOGGING ON CACHE INTERNAL "View the logging statements/debug info")
 
-function(log_info msg)
+function(log_msg msg)
     if (ENABLE_LOGGING)
-        message(STATUS "${Green}INFO${ColorReset} ${msg}")
+        message(STATUS "${msg}")
     endif()
+endfunction()
+
+function(log_info msg)
+    log_msg("${Green}INFO${ColorReset} ${msg}")
 endfunction()
 
 function(log_debug msg)
-    if (ENABLE_LOGGING)
-        message(STATUS "${Blue}DEBUG${ColorReset} ${msg}")
-    endif()
+    log_msg("${Blue}DEBUG${ColorReset} ${msg}")
 endfunction()
 
 function(log_warn msg)
-    if (ENABLE_LOGGING)
-        message(STATUS "${Red}WARN${ColorReset} ${msg}")
-    endif()
+    log_msg("${Red}WARN${ColorReset} ${msg}")
 endfunction()
 
 function(log_warn msg)
-    if (ENABLE_LOGGING)
-        message("${Magenta}TRACE${ColorReset} ${msg}")
-    endif()
+    log_msg("${Magenta}TRACE${ColorReset} ${msg}")
 endfunction()
 
 function(debug variableName)
