@@ -92,12 +92,11 @@ endfunction()
 
 function(log_warn msg)
     #if(("${LOG_LEVEL}" STREQUAL "${LOG_WARN}") OR ("${ENABLE_LOGGING}") OR ("${LOG_LEVEL}" GREATER "${LOG_ERROR}"))
-    if(("${LOG_LEVEL}" STREQUAL "${LOG_WARN}") OR (NOT "${ENABLE_LOGGING}" STREQUAL OFF) OR ("${LOG_LEVEL}" GREATER "${LOG_ERROR}"))
+    if(("${LOG_LEVEL}" STREQUAL "${LOG_WARN}") OR (NOT "${ENABLE_LOGGING}" STREQUAL OFF) OR ("${LOG_LEVEL}" GREATER "${LOG_WARN}"))
     #if(("${LOG_LEVEL}" STREQUAL "${LOG_WARN}") OR ("${LOG_LEVEL}" GREATER "${LOG_ERROR}"))
         log_msg("${Red}WARN${ColorReset} ${msg}")
     endif()
 endfunction()
-
 
 function(debug variableName)
     if (ENABLE_LOGGING)
