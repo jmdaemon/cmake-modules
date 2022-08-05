@@ -270,14 +270,12 @@ function(include_lib)
         # Include static or shared libraries
         set(bool ("${LIB_TYPE}" STREQUAL STATIC))
         tern(SUFFIX bool a so)
-
         set(LIB_USR ${USR}/lib${LIB_NAME}.${SUFFIX})
         set(LIB_LOCAL ${USR_LOCAL}/lib${LIB_NAME}.${SUFFIX})
 
         # If the header exists in include/some_dir, include the public header there
         set (bool (NOT "${LIB_HDRD}" STREQUAL ""))
         tern(HDRD bool "${LIB_HDRD}/" "")
-
         set(LIB_INCLUDE ${USR_INCLUDE}/${HDRD}${LIB_PUB})
         set(LIB_LOCAL_INCLUDE  ${USR_LOCAL_INCLUDE}/${HDRD}${LIB_PUB})
 
@@ -287,15 +285,11 @@ function(include_lib)
         log_debug("LIB_INCLUDE              : ${LIB_INCLUDE}")
         log_debug("LIB_LOCAL_INCLUDE        : ${LIB_LOCAL_INCLUDE}")
 
-        if (EXISTS ${LIB_USR})
-            # Found under /usr/local/lib
+        if (EXISTS ${LIB_USR})      # Found under /usr/lib
             set(LIB_FOUND ${LIB_USR})
-            set(LIB_SET_HEADER ${LIB_INCLUDE})
             set(HEADERS_${LIB_INCLUDE_NAME} ${LIB_INCLUDE})
-        elseif(EXISTS ${LIB_LOCAL})
-            # Found under /usr/lib
+        elseif(EXISTS ${LIB_LOCAL}) # Found under /usr/local/lib
             set(LIB_FOUND ${LIB_LOCAL})
-            set(LIB_SET_HEADER ${LIB_LOCAL_INCLUDE})
             set(HEADERS_${LIB_INCLUDE_NAME} ${LIB_LOCAL_INCLUDE})
         endif()
 
@@ -307,19 +301,16 @@ function(include_lib)
             endif()
 
             find_library(${LIB_NAME} NAMES ${LIB_NAMES} HINTS ${LIB_FOUND})
-
             set(bool ("${LIB_TYPE}" STREQUAL STATIC))
             ternop(bool 
                 "add_library(${LIB_NAME} STATIC IMPORTED GLOBAL)"
                 "add_library(${LIB_NAME} SHARED IMPORTED GLOBAL)")
 
-            set_target_properties(${LIB_NAME} PROPERTIES
-                IMPORTED_LOCATION ${LIB_FOUND}
-                PUB ${LIB_SET_HEADER}) # Include public interface headers
+            set_target_properties(${LIB_NAME} PROPERTIES IMPORTED_LOCATION ${LIB_FOUND})
 
             # Set headers variable used for other projects
             set(HEADERS_${LIB_INCLUDE_NAME} ${LIB_SET_HEADER})
-            log_debug("HEADERS_${LIB_INCLUDE_NAME}: ${LIB_SET_HEADER}")
+            log_debug("HEADERS_${LIB_INCLUDE_NAME}: ${LIB_INCLUDE_NAME}")
             return() # Exit early
         endif()
 
