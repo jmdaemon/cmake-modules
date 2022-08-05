@@ -52,27 +52,48 @@ set(LOG_ERROR 6)
 #set(LOG_NONE 0)
 #set(LOG_NONE 0)
 
+# Use case
+# Enable all logging
+# Enable specific logging levels
+
+#set(LOGLEVEL 0)
+
+#function(log_msg msg loglevel)
 function(log_msg msg)
-    if (ENABLE_LOGGING)
-        message(STATUS "${msg}")
+    #if (${loglevel} == )
+    message(STATUS "${msg}")
+    #if (ENABLE_LOGGING)
+    #endif()
+endfunction()
+
+function(log_trace msg)
+    #if(("${LOG_LEVEL}" STREQUAL "${LOG_TRACE}") OR (NOT STREQUAL "${ENABLE_LOGGING}" OFF) OR ("${LOG_LEVEL}" GREATER "${LOG_TRACE}"))
+    if(("${LOG_LEVEL}" STREQUAL "${LOG_TRACE}") OR ("${LOG_LEVEL}" GREATER "${LOG_TRACE}"))
+        log_msg("${Magenta}TRACE${ColorReset} ${msg}")
+    endif()
+endfunction()
+
+function(log_debug msg)
+    #if(("${LOG_LEVEL}" STREQUAL "${LOG_DEBUG}") OR (NOT STREQUAL "${ENABLE_LOGGING}" OFF) OR ("${LOG_LEVEL}" GREATER "${LOG_DEBUG}"))
+    if(("${LOG_LEVEL}" STREQUAL "${LOG_DEBUG}") OR ("${LOG_LEVEL}" GREATER "${LOG_DEBUG}"))
+        log_msg("${Blue}DEBUG${ColorReset} ${msg}")
     endif()
 endfunction()
 
 function(log_info msg)
-    log_msg("${Green}INFO${ColorReset} ${msg}")
-endfunction()
-
-function(log_debug msg)
-    log_msg("${Blue}DEBUG${ColorReset} ${msg}")
-endfunction()
-
-function(log_warn msg)
-    log_msg("${Red}WARN${ColorReset} ${msg}")
+    #if(("${LOG_LEVEL}" STREQUAL "${LOG_INFO}") OR (NOT STREQUAL "${ENABLE_LOGGING}" OFF) OR ("${LOG_LEVEL}" GREATER "${LOG_INFO}"))
+    if(("${LOG_LEVEL}" STREQUAL "${LOG_INFO}") OR ("${LOG_LEVEL}" GREATER "${LOG_INFO}"))
+        log_msg("${Green}INFO${ColorReset} ${msg}")
+    endif()
 endfunction()
 
 function(log_warn msg)
-    log_msg("${Magenta}TRACE${ColorReset} ${msg}")
+    #if(("${LOG_LEVEL}" STREQUAL "${LOG_WARN}") OR (NOT STREQUAL "${ENABLE_LOGGING}" OFF) OR ("${LOG_LEVEL}" GREATER "${LOG_ERROR}"))
+    if(("${LOG_LEVEL}" STREQUAL "${LOG_WARN}") OR ("${LOG_LEVEL}" GREATER "${LOG_ERROR}"))
+        log_msg("${Red}WARN${ColorReset} ${msg}")
+    endif()
 endfunction()
+
 
 function(debug variableName)
     if (ENABLE_LOGGING)
