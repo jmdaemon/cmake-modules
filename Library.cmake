@@ -268,15 +268,11 @@ function(include_lib)
         string(TOUPPER ${LIB_NAME} LIB_INCLUDE_NAME)
 
         # Include static or shared libraries
-        if ("${LIB_TYPE}" STREQUAL STATIC)
-            # Look for static library
-            set(LIB_USR ${USR}/lib${LIB_NAME}.a)
-            set(LIB_LOCAL ${USR_LOCAL}/lib${LIB_NAME}.a)
-        else()
-            # Default to dynamic library
-            set(LIB_USR ${USR}/lib${LIB_NAME}.so)
-            set(LIB_LOCAL ${USR_LOCAL}/lib${LIB_NAME}.so)
-        endif()
+        set(bool ("${LIB_TYPE}" STREQUAL STATIC))
+        tern(SUFFIX bool a so)
+
+        set(LIB_USR ${USR}/lib${LIB_NAME}.${SUFFIX})
+        set(LIB_LOCAL ${USR_LOCAL}/lib${LIB_NAME}.${SUFFIX})
 
         # If the header exists in include/some_dir, include the public header there
         if (NOT "${LIB_HDRD}" STREQUAL "")
