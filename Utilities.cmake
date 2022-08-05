@@ -34,6 +34,15 @@ function(lstarget)
     message(STATUS, "Headers Directory: ${TARGET_HEADERS}")
 endfunction()
 
+# Ternary Operator
+macro(tern var boolean value1 value2)
+    if(${boolean})
+        set(${var} ${value1})
+    else()
+        set(${var} ${value2})
+    endif()
+endmacro()
+
 # Debugging 
 
 ## Logging functions
