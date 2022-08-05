@@ -40,6 +40,18 @@ endfunction()
 # Use the following to enable viewing logs
 # set(GLOBAL ENABLE_LOGGING ON CACHE INTERNAL "View the logging statements/debug info")
 
+    #=======
+# Log Levels:
+# 0: None
+# 1: All
+set(LOG_TRACE 2)
+set(LOG_DEBUG 3)
+set(LOG_INFO 4)
+set(LOG_WARN 5)
+set(LOG_ERROR 6)
+#set(LOG_NONE 0)
+#set(LOG_NONE 0)
+
 function(log_msg msg)
     if (ENABLE_LOGGING)
         message(STATUS "${msg}")
