@@ -289,13 +289,24 @@ function(include_lib)
 
         if (EXISTS ${LIB_USR})
             # Found under /usr/local/lib
-            message(STATUS "Found: ${LIB_USR}")
+            set(LIB_FOUND ${LIB_USR})
+            set(LIB_SET_HEADER ${LIB_INCLUDE})
+            set(HEADERS_${LIB_INCLUDE_NAME} ${LIB_INCLUDE})
+        elseif(EXISTS ${LIB_LOCAL})
+            # Found under /usr/lib
+            set(LIB_FOUND ${LIB_LOCAL})
+            set(LIB_SET_HEADER ${LIB_LOCAL_INCLUDE})
+            set(HEADERS_${LIB_INCLUDE_NAME} ${LIB_LOCAL_INCLUDE})
+        endif()
+
+        if ((EXISTS ${LIB_USR}) OR (EXISTS ${LIB_LOCAL}))
+            message(STATUS "Found: ${LIB_FOUND}")
 
             if (NOT "${TARG_NAME}" STREQUAL "")
                 set(LIB_NAME ${TARG_NAME})
             endif()
 
-            find_library(${LIB_NAME} NAMES ${LIB_NAMES} HINTS ${LIB_USR})
+            find_library(${LIB_NAME} NAMES ${LIB_NAMES} HINTS ${LIB_FOUND})
 
             set(bool ("${LIB_TYPE}" STREQUAL STATIC))
             ternop(bool 
@@ -303,36 +314,12 @@ function(include_lib)
                 "add_library(${LIB_NAME} SHARED IMPORTED GLOBAL)")
 
             set_target_properties(${LIB_NAME} PROPERTIES
-                IMPORTED_LOCATION ${LIB_USR}
-                PUB ${LIB_INCLUDE}) # Include public interface headers
+                IMPORTED_LOCATION ${LIB_FOUND}
+                PUB ${LIB_SET_HEADER}) # Include public interface headers
 
             # Set headers variable used for other projects
-            set(HEADERS_${LIB_INCLUDE_NAME} ${LIB_INCLUDE})
-            log_debug("HEADERS_${LIB_INCLUDE_NAME}: ${LIB_INCLUDE}")
-            return() # Exit early
-
-        elseif(EXISTS ${LIB_LOCAL})
-            # Found under /usr/lib
-            message(STATUS "Found: ${LIB_LOCAL}")
-
-            if (NOT "${TARG_NAME}" STREQUAL "")
-                set(LIB_NAME ${TARG_NAME})
-            endif()
-
-            find_library(${LIB_NAME} NAMES ${LIB_NAMES} HINTS ${LIB_LOCAL})
-
-            if ("${LIB_TYPE}" STREQUAL STATIC)
-                add_library(${LIB_NAME} STATIC IMPORTED GLOBAL)
-            else()
-                add_library(${LIB_NAME} SHARED IMPORTED GLOBAL)
-            endif()
-
-            set_target_properties(${LIB_NAME} PROPERTIES
-                IMPORTED_LOCATION ${LIB_LOCAL}
-                PUB ${LIB_LOCAL_INCLUDE})
-
-            set(HEADERS_${LIB_INCLUDE_NAME} ${LIB_INCLUDE})
-            log_debug("HEADERS_${LIB_INCLUDE_NAME}: ${LIB_LOCAL_INCLUDE}")
+            set(HEADERS_${LIB_INCLUDE_NAME} ${LIB_SET_HEADER})
+            log_debug("HEADERS_${LIB_INCLUDE_NAME}: ${LIB_SET_HEADER}")
             return() # Exit early
         endif()
 
