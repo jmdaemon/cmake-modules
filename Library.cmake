@@ -268,30 +268,15 @@ function(include_lib)
         string(TOUPPER ${LIB_NAME} LIB_INCLUDE_NAME)
 
         # Include static or shared libraries
-        # If the string is null, default to "so"
-        # if the string is not null a
-        #set(bool1 ""${LIB_TYPE}" STREQUAL STATIC")
-        #set(bool2 "(NOT "${LIB_TYPE}" STREQUAL "")")
-        #set(bool ("${bool1}" AND "${bool2}"))
-        #set(bool (NOT "${LIB_TYPE}" STREQUAL "") AND ("${LIB_TYPE}" STREQUAL "STATIC"))
-        #set(bool (NOT "${LIB_TYPE}" STREQUAL "") AND ("${LIB_TYPE}" STREQUAL STATIC) CACHE BOOL "Toggle thing")
-        #set(bool (NOT "${LIB_TYPE}" STREQUAL "") AND ("${LIB_TYPE}" STREQUAL STATIC) CACHE BOOL "Toggle thing")
-        #set(bool ((NOT "${LIB_TYPE}" STREQUAL "") AND ("${LIB_TYPE}" STREQUAL "STATIC")))
-        #set(bool "${LIB_TYPE}" STREQUAL "")
-        #set(bool "NOT \"${LIB_TYPE}\" STREQUAL \"\"")
+        # Defaults to "so" if null, and "a" if LIB_TYPE == STATIC
         set(bool "((NOT \"${LIB_TYPE}\" STREQUAL \"\") AND (\"${LIB_TYPE}\" STREQUAL STATIC))")
-        #set(bool (NOT "${LIB_TYPE}" STREQUAL ""))
-        #log_info("bool1: ${bool1}")
-        #log_info("bool2: ${bool2}")
-        log_debug("bool     : ${bool}")
         tern(LIB_SUFFIX "${bool}" "a" "so")
         set(LIB_USR ${USR}/lib${LIB_NAME}.${LIB_SUFFIX})
         set(LIB_LOCAL ${USR_LOCAL}/lib${LIB_NAME}.${LIB_SUFFIX})
 
         # If the header exists in include/some_dir, include the public header there
-        #set(bool (NOT "${LIB_HDRD}" STREQUAL ""))
+        # Defaults to "" if null, and "${LIB_HDRD}/" if specified
         set(bool "NOT \"${LIB_HDRD}\" STREQUAL \"\"")
-        log_debug("bool     : ${bool}")
         tern(HDRD bool "${LIB_HDRD}/" "")
         set(LIB_INCLUDE ${USR_INCLUDE}/${HDRD}${LIB_PUB})
         set(LIB_LOCAL_INCLUDE  ${USR_LOCAL_INCLUDE}/${HDRD}${LIB_PUB})
@@ -318,6 +303,8 @@ function(include_lib)
             endif()
 
             find_library(${LIB_NAME} NAMES ${LIB_NAMES} HINTS ${LIB_FOUND})
+
+            # Defaults to SHARED if null, and STATIC if specified
             set(bool ("${LIB_TYPE}" STREQUAL STATIC))
             ternop(bool 
                 "add_library(${LIB_NAME} STATIC IMPORTED GLOBAL)"
@@ -336,7 +323,7 @@ function(include_lib)
 
         if (NOT EXISTS ${LIB_SP})
             # If the header exists in include/some_dir, include the public header there
-            #set(bool (NOT "${LIB_SPD}" STREQUAL ""))
+            # Defaults to "" if null, and \"${LIB_SPD}\" if specified
             set(bool "NOT \"${LIB_SPD}\" STREQUAL \"\"")
             tern(HDRD bool "${LIB_SPD}/" "")
             set(SUBPROJECT_INCLUDE ${LIB_SPI}/${HDRD}${LIB_PUB})
