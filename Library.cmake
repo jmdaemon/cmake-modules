@@ -297,11 +297,10 @@ function(include_lib)
 
             find_library(${LIB_NAME} NAMES ${LIB_NAMES} HINTS ${LIB_USR})
 
-            if ("${LIB_TYPE}" STREQUAL STATIC)
-                add_library(${LIB_NAME} STATIC IMPORTED GLOBAL)
-            else()
-                add_library(${LIB_NAME} SHARED IMPORTED GLOBAL)
-            endif()
+            set(bool ("${LIB_TYPE}" STREQUAL STATIC))
+            ternop(bool 
+                "add_library(${LIB_NAME} STATIC IMPORTED GLOBAL)"
+                "add_library(${LIB_NAME} SHARED IMPORTED GLOBAL)")
 
             set_target_properties(${LIB_NAME} PROPERTIES
                 IMPORTED_LOCATION ${LIB_USR}
