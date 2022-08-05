@@ -37,39 +37,35 @@ endfunction()
 # Debugging 
 
 ## Logging functions
-set_property(GLOBAL PROPERTY ENABLE_LOGGING OFF)
+# Use the following to enable viewing logs
+# set(GLOBAL ENABLE_LOGGING ON CACHE INTERNAL "View the logging statements/debug info")
 
 macro(log_info msg)
-    get_property(IS_ENABLED GLOBAL PROPERTY ENABLE_LOGGING)
-    if (IS_ENABLED)
+    if (ENABLE_LOGGING)
         message(STATUS "${Green}INFO${ColorReset} ${msg}")
     endif()
 endmacro()
 
 macro(log_debug msg)
-    get_property(IS_ENABLED GLOBAL PROPERTY ENABLE_LOGGING)
-    if (IS_ENABLED)
+    if (ENABLE_LOGGING)
         message(STATUS "${Blue}DEBUG${ColorReset} ${msg}")
     endif()
 endmacro()
 
 macro(log_warn msg)
-    get_property(IS_ENABLED GLOBAL PROPERTY ENABLE_LOGGING)
-    if (IS_ENABLED)
+    if (ENABLE_LOGGING)
         message(STATUS "${Red}WARN${ColorReset} ${msg}")
     endif()
 endmacro()
 
 macro(log_warn msg)
-    get_property(IS_ENABLED GLOBAL PROPERTY ENABLE_LOGGING)
-    if (IS_ENABLED)
+    if (ENABLE_LOGGING)
         message("${Magenta}TRACE${ColorReset} ${msg}")
     endif()
 endmacro()
 
 macro(debug variableName)
-    get_property(IS_ENABLED GLOBAL PROPERTY ENABLE_LOGGING)
-    if (IS_ENABLED)
+    if (ENABLE_LOGGING)
         debug("${variableName}=\${${variableName}}")
     endif()
 endmacro()
