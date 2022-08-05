@@ -305,7 +305,7 @@ function(include_lib)
             find_library(${LIB_NAME} NAMES ${LIB_NAMES} HINTS ${LIB_FOUND})
 
             # Defaults to SHARED if null, and STATIC if specified
-            set(bool ("${LIB_TYPE}" STREQUAL STATIC))
+            set(bool "\"${LIB_TYPE}\" STREQUAL STATIC)")
             ternop(bool 
                 "add_library(${LIB_NAME} STATIC IMPORTED GLOBAL)"
                 "add_library(${LIB_NAME} SHARED IMPORTED GLOBAL)")
