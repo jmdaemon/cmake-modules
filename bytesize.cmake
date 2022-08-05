@@ -25,7 +25,6 @@ set(LIB_GIT_REPO https://github.com/jmdaemon/bytesize)
 # Subproject variables
 set(LIB_SUBPROJECT "${PROJECT_SOURCE_DIR}/subprojects/bytesize")
 set(LIB_SUBPROJECT_INCLUDE "${PROJECT_SOURCE_DIR}/subprojects/bytesize/include")
-set(LIB_SUBPROJECT_DIR "")
 
 include_lib(
     NAME ${LIB_NAME}
