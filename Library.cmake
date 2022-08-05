@@ -248,16 +248,17 @@ function(include_lib)
     # Uses LIB_ prefix for variables
     set(ARG_PREFIX LIB) # Don't append a '_' suffix to ARG_PREFIX (it breaks the rest of the parameters)
     set(_OPTIONS_ARGS)
-    set(_ONE_VALUE_ARGS NAME TYPE PUB HDRD REPO SP SPI SPD)
+    set(_ONE_VALUE_ARGS NAME TARG_NAME TYPE PUB HDRD REPO SP SPI SPD)
     set(_MULTI_VALUE_ARGS NAMES)
     cmake_parse_arguments(${ARG_PREFIX} "${_OPTIONS_ARGS}" "${_ONE_VALUE_ARGS}" "${_MULTI_VALUE_ARGS}" ${ARGN})
 
     # Optional arguments:
-    # LIB_TYPE, LIB_HDRD, LIB_SPD
+    # LIB_TYPE, LIB_HDRD, LIB_SPD, TARG_NAME
 
     # Log function parameters
     log_debug("=== ${LIB_NAME} Debug Info ===")
     log_debug("LIB_NAME                 : ${LIB_NAME}")
+    log_debug("TARG_NAME                : ${TARG_NAME}")
     log_debug("LIB_TYPE                 : ${LIB_TYPE}")
     log_debug("LIB_NAMES                : ${LIB_NAMES}")
     log_debug("LIB_PUBLIC_HEADER        : ${LIB_PUB}")
@@ -268,7 +269,7 @@ function(include_lib)
     log_debug("LIB_SUBPROJECT_DIR       : ${LIB_SPD}")
 
     # If the library hasn't been included
-    if (NOT TARGET ${LIB_NAME})
+    if ((NOT TARGET ${LIB_NAME}) OR (NOT TARGET "${TARG_NAME}")) 
         # Find the package on our system
         message(STATUS "Finding library on system: ${LIB_NAME}")
 
@@ -309,6 +310,11 @@ function(include_lib)
         if (EXISTS ${LIB_USR})
             # Found under /usr/local/lib
             message(STATUS "Found: ${LIB_USR}")
+
+            if (NOT "${TARG_NAME}" STREQUAL "")
+                set(LIB_NAME ${TARG_NAME})
+            endif()
+
             find_library(${LIB_NAME} NAMES ${LIB_NAMES} HINTS ${LIB_USR})
 
             if ("${LIB_TYPE}" STREQUAL STATIC)
@@ -329,6 +335,11 @@ function(include_lib)
         elseif(EXISTS ${LIB_LOCAL})
             # Found under /usr/lib
             message(STATUS "Found: ${LIB_LOCAL}")
+
+            if (NOT "${TARG_NAME}" STREQUAL "")
+                set(LIB_NAME ${TARG_NAME})
+            endif()
+
             find_library(${LIB_NAME} NAMES ${LIB_NAMES} HINTS ${LIB_LOCAL})
 
             if ("${LIB_TYPE}" STREQUAL STATIC)
@@ -361,6 +372,9 @@ function(include_lib)
             if (NOT ${USE_AS_SUBMODULE})
                 # Configure with FetchContent
                 message(STATUS "Configuring ${LIB_NAME} with FetchContent")
+                if (NOT "${TARG_NAME}" STREQUAL "")
+                    set(LIB_NAME ${TARG_NAME})
+                endif()
                 FetchContent_Declare(${LIB_NAME}
                     GIT_REPOSITORY  ${LIB_REPO})
                 FetchContent_MakeAvailable(${LIB_NAME})
