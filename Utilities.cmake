@@ -21,37 +21,6 @@ if(NOT WIN32)
   set(BoldWhite   "${Esc}[1;37m")
 endif()
 
-function(lstarget)
-    # Set make_library arguments
-    set(ARG_PREFIX TARGET)
-    set(_OPTIONS_ARGS )
-    set(_ONE_VALUE_ARGS NAME)
-    set(_MULTI_VALUE_ARGS HEADERS)
-
-    cmake_parse_arguments(${ARG_PREFIX} "${_OPTIONS_ARGS}" "${_ONE_VALUE_ARGS}" "${_MULTI_VALUE_ARGS}" ${ARGN})
-
-    message(STATUS, "Target Name: ${TARGET_NAME}")
-    message(STATUS, "Headers Directory: ${TARGET_HEADERS}")
-endfunction()
-
-# Ternary Operator
-macro(tern var boolean value1 value2)
-    if(${boolean})
-        set(${var} ${value1})
-    else()
-        set(${var} ${value2})
-    endif()
-endmacro()
-
-macro(ternop boolean op1 op2)
-    if(${boolean})
-        cmake_language(EVAL CODE "${op1}")
-    else()
-        cmake_language(EVAL CODE "${op2}")
-    endif()
-endmacro()
-
-
 # Debugging 
 
 ## Logging functions
@@ -100,3 +69,80 @@ function(printvar variableName)
         debug("${variableName}=\${${variableName}}")
     endif()
 endfunction()
+
+function(lstarget)
+    # Set make_library arguments
+    set(ARG_PREFIX TARGET)
+    set(_OPTIONS_ARGS )
+    set(_ONE_VALUE_ARGS NAME)
+    set(_MULTI_VALUE_ARGS HEADERS)
+
+    cmake_parse_arguments(${ARG_PREFIX} "${_OPTIONS_ARGS}" "${_ONE_VALUE_ARGS}" "${_MULTI_VALUE_ARGS}" ${ARGN})
+
+    message(STATUS, "Target Name: ${TARGET_NAME}")
+    message(STATUS, "Headers Directory: ${TARGET_HEADERS}")
+endfunction()
+
+# Ternary Operator
+macro(ternm var boolean value1 value2)
+    cmake_language(EVAL CODE "
+    if (${boolean})
+        message(STATUS \"Executing true branch\")
+        set(${var} ${value1})
+    else()
+        message(STATUS \"Executing false branch\")
+        set(${var} ${value2})
+    endif()
+    ")
+    log_trace("var: ${var}")
+    log_trace("boolean: ${boolean}")
+    log_trace("value1: ${value1}")
+    log_trace("value2: ${value2}")
+endmacro()
+
+function(tern var boolean value1 value2)
+    #if(EVAL ${boolean})
+    #if(${boolean})
+    #if("${${boolean}}")
+    #if({${boolean})
+
+    #if(${boolean})
+        #message(STATUS "Executing true branch")
+        #log_trace("Executing true branch")
+        #log_trace("var: ${var}")
+        #log_trace("boolean: ${boolean}")
+        #log_trace("value1: ${value1}")
+        #log_trace("value2: ${value2}")
+        #set(${var} ${value1})
+        #set("${var}" ${value1})
+        #set("${var}" value1)
+    #else()
+        #message(STATUS "Executing false branch")
+        ##set(${var} ${value2})
+        #set("${var}" value2)
+    #endif()
+    cmake_language(EVAL CODE "
+    if (${boolean})
+        message(STATUS \"Executing true branch\")
+        set(${var} ${value1})
+    else()
+        message(STATUS \"Executing false branch\")
+        set(${var} ${value2})
+    endif()
+    ")
+    log_trace("var: ${var}")
+    log_trace("boolean: ${boolean}")
+    log_trace("value1: ${value1}")
+    log_trace("value2: ${value2}")
+endfunction()
+
+function(ternop boolean op1 op2)
+    if(${boolean})
+        cmake_language(EVAL CODE "${op1}")
+    else()
+        cmake_language(EVAL CODE "${op2}")
+    endif()
+endfunction()
+
+
+
