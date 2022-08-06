@@ -1,4 +1,4 @@
-if (BUILD_DOC)
+if (BUILD_DOC AND (NOT TARGET doc))
     # Check if Doxygen is installed
     find_package(Doxygen)
     if (DOXYGEN_FOUND)
