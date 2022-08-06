@@ -269,7 +269,7 @@ function(include_lib)
 
         # Include static or shared libraries
         # Defaults to "so" if null, and "a" if LIB_TYPE == STATIC
-        set(bool "((NOT \"${LIB_TYPE}\" STREQUAL \"\") AND (\"${LIB_TYPE}\" STREQUAL STATIC))")
+        set(bool "((NOT (\"${LIB_TYPE}\" STREQUAL \"\")) AND (\"${LIB_TYPE}\" STREQUAL \"STATIC\"))")
         tern(LIB_SUFFIX "${bool}" "a" "so")
         set(LIB_USR ${USR}/lib${LIB_NAME}.${LIB_SUFFIX})
         set(LIB_LOCAL ${USR_LOCAL}/lib${LIB_NAME}.${LIB_SUFFIX})
@@ -289,10 +289,10 @@ function(include_lib)
 
         if (EXISTS ${LIB_USR})      # Found under /usr/lib
             set(LIB_FOUND ${LIB_USR})
-            set(HEADERS_${LIB_INCLUDE_NAME} ${LIB_INCLUDE})
+            set(HEADERS_${LIB_INCLUDE_NAME} ${LIB_INCLUDE} CACHE INTERNAL "Dynamically set library header includes")
         elseif(EXISTS ${LIB_LOCAL}) # Found under /usr/local/lib
             set(LIB_FOUND ${LIB_LOCAL})
-            set(HEADERS_${LIB_INCLUDE_NAME} ${LIB_LOCAL_INCLUDE})
+            set(HEADERS_${LIB_INCLUDE_NAME} ${LIB_LOCAL_INCLUDE} CACHE INTERNAL "Dynamically set library header includes")
         endif()
 
         if ((EXISTS ${LIB_USR}) OR (EXISTS ${LIB_LOCAL}))
@@ -345,7 +345,7 @@ function(include_lib)
             # This builds the library from source (you'll need the library's required build deps)
             add_subdirectory(${LIB_SP})
             #set(HEADERS_${LIB_INCLUDE_NAME} ${SUBPROJECT_INCLUDE})
-            set(HEADERS_${LIB_INCLUDE_NAME} ${LIB_SPI}/${HDRD})
+            set(HEADERS_${LIB_INCLUDE_NAME} ${LIB_SPI}/${HDRD} CACHE INTERNAL "Dynamically set library header includes")
             log_debug("HEADERS_${LIB_INCLUDE_NAME}: ${HEADERS_${LIB_INCLUDE_NAME}}")
             return()
         endif()
