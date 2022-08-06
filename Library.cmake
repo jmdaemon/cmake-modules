@@ -277,7 +277,7 @@ function(include_lib)
         # If the header exists in include/some_dir, include the public header there
         # Defaults to "" if null, and "${LIB_HDRD}/" if specified
         set(bool "NOT \"${LIB_HDRD}\" STREQUAL \"\"")
-        tern(HDRD bool "${LIB_HDRD}/" "")
+        tern(HDRD "${bool}" "${LIB_HDRD}/" "")
         set(LIB_INCLUDE ${USR_INCLUDE}/${HDRD}${LIB_PUB})
         set(LIB_LOCAL_INCLUDE  ${USR_LOCAL_INCLUDE}/${HDRD}${LIB_PUB})
 
@@ -313,22 +313,21 @@ function(include_lib)
             set_target_properties(${LIB_NAME} PROPERTIES IMPORTED_LOCATION ${LIB_FOUND})
 
             # Set headers variable used for other projects
-            set(HEADERS_${LIB_INCLUDE_NAME} ${LIB_PUB})
-            log_debug("HEADERS_${LIB_INCLUDE_NAME}: ${LIB_INCLUDE_NAME}")
+            #set(HEADERS_${LIB_INCLUDE_NAME} ${LIB_PUB})
+            log_debug("HEADERS_${LIB_INCLUDE_NAME}: ${HEADERS${LIB_INCLUDE_NAME}}")
             return() # Exit early
         endif()
 
         # Assume that we're configuring a subproject
         message(STATUS "Configuring ${LIB_NAME} as a subproject")
+        # If the header exists in include/some_dir, include the public header there
+        # Defaults to "" if null, and \"${LIB_SPD}\" if specified
+        set(bool "NOT \"${LIB_SPD}\" STREQUAL \"\"")
+        tern(HDRD "${bool}" "${LIB_SPD}/" "")
+        set(SUBPROJECT_INCLUDE ${LIB_SPI}/${HDRD}${LIB_PUB})
+        log_debug("SUBPROJECT_INCLUDE: ${SUBPROJECT_INCLUDE}")
 
         if (NOT EXISTS ${LIB_SP})
-            # If the header exists in include/some_dir, include the public header there
-            # Defaults to "" if null, and \"${LIB_SPD}\" if specified
-            set(bool "NOT \"${LIB_SPD}\" STREQUAL \"\"")
-            tern(HDRD bool "${LIB_SPD}/" "")
-            set(SUBPROJECT_INCLUDE ${LIB_SPI}/${HDRD}${LIB_PUB})
-            log_debug("SUBPROJECT_INCLUDE: ${SUBPROJECT_INCLUDE}")
-
             if (NOT ${USE_AS_SUBMODULE})
                 # Configure with FetchContent
                 message(STATUS "Configuring ${LIB_NAME} with FetchContent")
@@ -345,6 +344,9 @@ function(include_lib)
             message(STATUS "Configuring ${LIB_NAME} as Git Submodule")
             # This builds the library from source (you'll need the library's required build deps)
             add_subdirectory(${LIB_SP})
+            #set(HEADERS_${LIB_INCLUDE_NAME} ${SUBPROJECT_INCLUDE})
+            set(HEADERS_${LIB_INCLUDE_NAME} ${LIB_SPI}/${HDRD})
+            log_debug("HEADERS_${LIB_INCLUDE_NAME}: ${HEADERS_${LIB_INCLUDE_NAME}}")
             return()
         endif()
     endif()
