@@ -1,6 +1,5 @@
 #/usr/local/lib/libutility.
 # Library.cmake - Provides functions to create and use libraries 
-#
 
 # Imports
 include(CMakeParseArguments)    # Parse lists of function arguments
@@ -268,16 +267,21 @@ function(include_lib)
         string(TOUPPER ${LIB_NAME} LIB_INCLUDE_NAME)
 
         # Include static or shared libraries
-        # Defaults to "so" if null, and "a" if LIB_TYPE == STATIC
-        set(bool "${LIB_TYPE}" STREQUAL "STATIC")
-        tern(LIB_SUFFIX bool "a" "so")
-        set(LIB_USR ${USR}/lib${LIB_NAME}.${LIB_SUFFIX})
-        set(LIB_LOCAL ${USR_LOCAL}/lib${LIB_NAME}.${LIB_SUFFIX})
+        if (("${LIB_TYPE}" STREQUAL "STATIC") AND (NOT "${LIB_TYPE}" STREQUAL ""))
+            set(SUFFIX "a")
+        else()
+            set(SUFFIX "so")
+        endif()
+
+        set(LIB_USR ${USR}/lib${LIB_NAME}.${SUFFIX})
+        set(LIB_LOCAL ${USR_LOCAL}/lib${LIB_NAME}.${SUFFIX})
 
         # If the header exists in include/some_dir, include the public header there
-        # Defaults to "" if null, and "${LIB_HDRD}/" if specified
-        set(bool NOT "${LIB_HDRD}" STREQUAL "")
-        tern(HDRD bool "${LIB_HDRD}/" "")
+        if (NOT "${LIB_HDRD}" STREQUAL "")
+            set(HDRD "a")
+        else()
+            set(HDRD "so")
+        endif()
         set(LIB_INCLUDE ${USR_INCLUDE}/${HDRD})
         set(LIB_LOCAL_INCLUDE  ${USR_LOCAL_INCLUDE}/${HDRD})
 
@@ -305,10 +309,11 @@ function(include_lib)
             find_library(${LIB_NAME} NAMES ${LIB_NAMES} HINTS ${LIB_FOUND})
 
             # Defaults to SHARED if null, and STATIC if specified
-            set(bool "${LIB_TYPE}" STREQUAL STATIC)
-            ternop(bool 
-                "add_library(${LIB_NAME} STATIC IMPORTED GLOBAL)"
-                "add_library(${LIB_NAME} SHARED IMPORTED GLOBAL)")
+            if ("${LIB_TYPE}" STREQUAL STATIC)
+                add_library(${LIB_NAME} STATIC IMPORTED GLOBAL)
+            else()
+                add_library(${LIB_NAME} SHARED IMPORTED GLOBAL)
+            endif()
             set_target_properties(${LIB_NAME} PROPERTIES IMPORTED_LOCATION ${LIB_FOUND})
 
             log_debug("HEADERS_${LIB_INCLUDE_NAME}: ${HEADERS${LIB_INCLUDE_NAME}}")
@@ -317,10 +322,13 @@ function(include_lib)
 
         # Assume that we're configuring a subproject
         message(STATUS "Configuring ${LIB_NAME} as a subproject")
+
         # If the header exists in include/some_dir, include the public header there
-        # Defaults to "" if null, and \"${LIB_SPD}\" if specified
-        set(bool NOT "${LIB_SPD}" STREQUAL "")
-        tern(HDRD bool "${LIB_SPD}/" "")
+        if (NOT "${LIB_SPD}" STREQUAL "")
+            set(HDRD "${LIB_SPD}/")
+        else()
+            set(HDRD "")
+        endif()
         set(SUBPROJECT_INCLUDE ${LIB_SPI}/${HDRD})
         log_debug("SUBPROJECT_INCLUDE: ${SUBPROJECT_INCLUDE}")
 
