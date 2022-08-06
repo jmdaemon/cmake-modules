@@ -313,7 +313,7 @@ function(include_lib)
             set_target_properties(${LIB_NAME} PROPERTIES IMPORTED_LOCATION ${LIB_FOUND})
 
             # Set headers variable used for other projects
-            set(HEADERS_${LIB_INCLUDE_NAME} ${LIB_SET_HEADER})
+            set(HEADERS_${LIB_INCLUDE_NAME} ${LIB_PUB})
             log_debug("HEADERS_${LIB_INCLUDE_NAME}: ${LIB_INCLUDE_NAME}")
             return() # Exit early
         endif()
