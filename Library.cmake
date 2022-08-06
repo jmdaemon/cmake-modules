@@ -278,8 +278,8 @@ function(include_lib)
         # Defaults to "" if null, and "${LIB_HDRD}/" if specified
         set(bool NOT "${LIB_HDRD}" STREQUAL "")
         tern(HDRD bool "${LIB_HDRD}/" "")
-        set(LIB_INCLUDE ${USR_INCLUDE}/${HDRD}${LIB_PUB})
-        set(LIB_LOCAL_INCLUDE  ${USR_LOCAL_INCLUDE}/${HDRD}${LIB_PUB})
+        set(LIB_INCLUDE ${USR_INCLUDE}/${HDRD})
+        set(LIB_LOCAL_INCLUDE  ${USR_LOCAL_INCLUDE}/${HDRD})
 
         log_debug("Library Paths:")
         log_debug("LIB_USR                  : ${LIB_USR}")
@@ -289,10 +289,10 @@ function(include_lib)
 
         if (EXISTS ${LIB_USR})      # Found under /usr/lib
             set(LIB_FOUND ${LIB_USR})
-            set(HEADERS_${LIB_INCLUDE_NAME} ${USR_INCLUDE}/${HDRD} CACHE INTERNAL "Dynamically set library header includes")
+            set(HEADERS_${LIB_INCLUDE_NAME} ${LIB_INCLUDE} CACHE INTERNAL "Dynamically set library header includes")
         elseif(EXISTS ${LIB_LOCAL}) # Found under /usr/local/lib
             set(LIB_FOUND ${LIB_LOCAL})
-            set(HEADERS_${LIB_INCLUDE_NAME} ${USR_LOCAL_INCLUDE}/${HDRD} CACHE INTERNAL "Dynamically set library header includes")
+            set(HEADERS_${LIB_INCLUDE_NAME} ${LIB_LOCAL_INCLUDE} CACHE INTERNAL "Dynamically set library header includes")
         endif()
 
         if ((EXISTS ${LIB_USR}) OR (EXISTS ${LIB_LOCAL}))
@@ -321,7 +321,7 @@ function(include_lib)
         # Defaults to "" if null, and \"${LIB_SPD}\" if specified
         set(bool NOT "${LIB_SPD}" STREQUAL "")
         tern(HDRD bool "${LIB_SPD}/" "")
-        set(SUBPROJECT_INCLUDE ${LIB_SPI}/${HDRD}${LIB_PUB})
+        set(SUBPROJECT_INCLUDE ${LIB_SPI}/${HDRD})
         log_debug("SUBPROJECT_INCLUDE: ${SUBPROJECT_INCLUDE}")
 
         if (NOT EXISTS ${LIB_SP})
@@ -341,7 +341,7 @@ function(include_lib)
             message(STATUS "Configuring ${LIB_NAME} as Git Submodule")
             # This builds the library from source (you'll need the library's required build deps)
             add_subdirectory(${LIB_SP})
-            set(HEADERS_${LIB_INCLUDE_NAME} ${LIB_SPI}/${HDRD} CACHE INTERNAL "Dynamically set library header includes")
+            set(HEADERS_${LIB_INCLUDE_NAME} ${SUBPROJECT_INCLUDE} CACHE INTERNAL "Dynamically set library header includes")
             log_debug("HEADERS_${LIB_INCLUDE_NAME}: ${HEADERS_${LIB_INCLUDE_NAME}}")
             return()
         endif()
