@@ -278,9 +278,9 @@ function(include_lib)
 
         # If the header exists in include/some_dir, include the public header there
         if (NOT "${LIB_HDRD}" STREQUAL "")
-            set(HDRD "a")
+            set(HDRD "${LIB_HDRD}/" )
         else()
-            set(HDRD "so")
+            set(HDRD "")
         endif()
         set(LIB_INCLUDE ${USR_INCLUDE}/${HDRD})
         set(LIB_LOCAL_INCLUDE  ${USR_LOCAL_INCLUDE}/${HDRD})
