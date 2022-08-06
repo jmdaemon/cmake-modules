@@ -269,18 +269,15 @@ function(include_lib)
 
         # Include static or shared libraries
         # Defaults to "so" if null, and "a" if LIB_TYPE == STATIC
-        #set(bool "((NOT (\"${LIB_TYPE}\" STREQUAL \"\")) AND (\"${LIB_TYPE}\" STREQUAL \"STATIC\"))")
-        #set(bool "(NOT \"${LIB_TYPE}\" STREQUAL \"\") AND (\"${LIB_TYPE}\" STREQUAL \"STATIC\")")
-        #set(bool "(\"${LIB_TYPE}\" STREQUAL \"STATIC\")")
-        set(bool "${LIB_TYPE}" STREQUAL "STATIC" CACHE INTERNAL "")
+        set(bool "${LIB_TYPE}" STREQUAL "STATIC")
         tern(LIB_SUFFIX bool "a" "so")
         set(LIB_USR ${USR}/lib${LIB_NAME}.${LIB_SUFFIX})
         set(LIB_LOCAL ${USR_LOCAL}/lib${LIB_NAME}.${LIB_SUFFIX})
 
         # If the header exists in include/some_dir, include the public header there
         # Defaults to "" if null, and "${LIB_HDRD}/" if specified
-        set(bool "NOT \"${LIB_HDRD}\" STREQUAL \"\"")
-        tern(HDRD "${bool}" "${LIB_HDRD}/" "")
+        set(bool NOT "${LIB_HDRD}" STREQUAL "")
+        tern(HDRD bool "${LIB_HDRD}/" "")
         set(LIB_INCLUDE ${USR_INCLUDE}/${HDRD}${LIB_PUB})
         set(LIB_LOCAL_INCLUDE  ${USR_LOCAL_INCLUDE}/${HDRD}${LIB_PUB})
 
@@ -292,10 +289,10 @@ function(include_lib)
 
         if (EXISTS ${LIB_USR})      # Found under /usr/lib
             set(LIB_FOUND ${LIB_USR})
-            set(HEADERS_${LIB_INCLUDE_NAME} ${LIB_INCLUDE} CACHE INTERNAL "Dynamically set library header includes")
+            set(HEADERS_${LIB_INCLUDE_NAME} ${USR_INCLUDE}/${HDRD} CACHE INTERNAL "Dynamically set library header includes")
         elseif(EXISTS ${LIB_LOCAL}) # Found under /usr/local/lib
             set(LIB_FOUND ${LIB_LOCAL})
-            set(HEADERS_${LIB_INCLUDE_NAME} ${LIB_LOCAL_INCLUDE} CACHE INTERNAL "Dynamically set library header includes")
+            set(HEADERS_${LIB_INCLUDE_NAME} ${USR_LOCAL_INCLUDE}/${HDRD} CACHE INTERNAL "Dynamically set library header includes")
         endif()
 
         if ((EXISTS ${LIB_USR}) OR (EXISTS ${LIB_LOCAL}))
@@ -308,15 +305,12 @@ function(include_lib)
             find_library(${LIB_NAME} NAMES ${LIB_NAMES} HINTS ${LIB_FOUND})
 
             # Defaults to SHARED if null, and STATIC if specified
-            set(bool "\"${LIB_TYPE}\" STREQUAL STATIC)")
+            set(bool "${LIB_TYPE}" STREQUAL STATIC)
             ternop(bool 
                 "add_library(${LIB_NAME} STATIC IMPORTED GLOBAL)"
                 "add_library(${LIB_NAME} SHARED IMPORTED GLOBAL)")
-
             set_target_properties(${LIB_NAME} PROPERTIES IMPORTED_LOCATION ${LIB_FOUND})
 
-            # Set headers variable used for other projects
-            #set(HEADERS_${LIB_INCLUDE_NAME} ${LIB_PUB})
             log_debug("HEADERS_${LIB_INCLUDE_NAME}: ${HEADERS${LIB_INCLUDE_NAME}}")
             return() # Exit early
         endif()
@@ -325,8 +319,8 @@ function(include_lib)
         message(STATUS "Configuring ${LIB_NAME} as a subproject")
         # If the header exists in include/some_dir, include the public header there
         # Defaults to "" if null, and \"${LIB_SPD}\" if specified
-        set(bool "NOT \"${LIB_SPD}\" STREQUAL \"\"")
-        tern(HDRD "${bool}" "${LIB_SPD}/" "")
+        set(bool NOT "${LIB_SPD}" STREQUAL "")
+        tern(HDRD bool "${LIB_SPD}/" "")
         set(SUBPROJECT_INCLUDE ${LIB_SPI}/${HDRD}${LIB_PUB})
         log_debug("SUBPROJECT_INCLUDE: ${SUBPROJECT_INCLUDE}")
 
@@ -347,7 +341,6 @@ function(include_lib)
             message(STATUS "Configuring ${LIB_NAME} as Git Submodule")
             # This builds the library from source (you'll need the library's required build deps)
             add_subdirectory(${LIB_SP})
-            #set(HEADERS_${LIB_INCLUDE_NAME} ${SUBPROJECT_INCLUDE})
             set(HEADERS_${LIB_INCLUDE_NAME} ${LIB_SPI}/${HDRD} CACHE INTERNAL "Dynamically set library header includes")
             log_debug("HEADERS_${LIB_INCLUDE_NAME}: ${HEADERS_${LIB_INCLUDE_NAME}}")
             return()
