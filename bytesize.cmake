@@ -3,18 +3,9 @@
 # You can include bytesize into your project in two ways. You can:
 # 1.a Install the library as a package system wide. 
 # 2.b Toggle ${USE_AS_SUBMODULE}, and include library as a git submodule in your project.
-#set(USE_AS_SUBMODULE OFF)
-
-# *Note* that if you are building Bytesize as a subproject. Bytesize depends on log.c and
-# Unity. If these are also configured # as subprojects, then you can include them with:
-# include(logc)
-# include(Unity)
-# Given that you are using my cmake-modules here: https://github.com/jmdaemon/cmake-modules
-# Otherwise they must be installed on your system or configured as a subproject manually.
-
 include(Library)
 
-set(USE_AS_SUBMODULE ON)
+set(USE_AS_SUBMODULE OFF)
 
 # Library Variables 
 set(LIB_NAME bytesize)
