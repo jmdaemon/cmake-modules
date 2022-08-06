@@ -85,7 +85,7 @@ endfunction()
 
 # Ternary Operators
 macro(tern var boolean value1 value2)
-    if (${boolean})
+    if (boolean)
         log_debug("In tern() true branch")
         set(${var} ${value1})
     else()

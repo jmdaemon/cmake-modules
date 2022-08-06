@@ -269,8 +269,11 @@ function(include_lib)
 
         # Include static or shared libraries
         # Defaults to "so" if null, and "a" if LIB_TYPE == STATIC
-        set(bool "((NOT (\"${LIB_TYPE}\" STREQUAL \"\")) AND (\"${LIB_TYPE}\" STREQUAL \"STATIC\"))")
-        tern(LIB_SUFFIX "${bool}" "a" "so")
+        #set(bool "((NOT (\"${LIB_TYPE}\" STREQUAL \"\")) AND (\"${LIB_TYPE}\" STREQUAL \"STATIC\"))")
+        #set(bool "(NOT \"${LIB_TYPE}\" STREQUAL \"\") AND (\"${LIB_TYPE}\" STREQUAL \"STATIC\")")
+        #set(bool "(\"${LIB_TYPE}\" STREQUAL \"STATIC\")")
+        set(bool "${LIB_TYPE}" STREQUAL "STATIC" CACHE INTERNAL "")
+        tern(LIB_SUFFIX bool "a" "so")
         set(LIB_USR ${USR}/lib${LIB_NAME}.${LIB_SUFFIX})
         set(LIB_LOCAL ${USR_LOCAL}/lib${LIB_NAME}.${LIB_SUFFIX})
 
