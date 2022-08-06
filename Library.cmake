@@ -243,24 +243,24 @@ function(include_lib)
     set(_MULTI_VALUE_ARGS NAMES)
     cmake_parse_arguments(${ARG_PREFIX} "${_OPTIONS_ARGS}" "${_ONE_VALUE_ARGS}" "${_MULTI_VALUE_ARGS}" ${ARGN})
 
-    # Optional arguments:
-    # LIB_TYPE, LIB_HDRD, LIB_SPD, TARG_NAME
-
-    # Log function parameters
-    log_debug("=== ${LIB_NAME} Debug Info ===")
-    log_debug("LIB_NAME                 : ${LIB_NAME}")
-    log_debug("TARG_NAME                : ${TARG_NAME}")
-    log_debug("LIB_TYPE                 : ${LIB_TYPE}")
-    log_debug("LIB_NAMES                : ${LIB_NAMES}")
-    log_debug("LIB_PUBLIC_HEADER        : ${LIB_PUB}")
-    log_debug("LIB_HEADER_DIR           : ${LIB_HDRD}")
-    log_debug("LIB_GIT_REPO             : ${LIB_REPO}")
-    log_debug("LIB_SUBPROJECT           : ${LIB_SP}")
-    log_debug("LIB_SUBPROJECT_INCLUDE   : ${LIB_SPI}")
-    log_debug("LIB_SUBPROJECT_DIR       : ${LIB_SPD}")
-
     # If the library hasn't been included
     if ((NOT TARGET ${LIB_NAME}) OR ((NOT TARGET "${TARG_NAME}") AND (NOT "${TARG_NAME}" STREQUAL ""))) 
+        # Optional arguments:
+        # LIB_TYPE, LIB_HDRD, LIB_SPD, TARG_NAME
+
+        # Show function parameters
+        log_debug("=== ${LIB_NAME} Debug Info ===")
+        log_debug("LIB_NAME                 : ${LIB_NAME}")
+        log_debug("TARG_NAME                : ${TARG_NAME}")
+        log_debug("LIB_TYPE                 : ${LIB_TYPE}")
+        log_debug("LIB_NAMES                : ${LIB_NAMES}")
+        log_debug("LIB_PUBLIC_HEADER        : ${LIB_PUB}")
+        log_debug("LIB_HEADER_DIR           : ${LIB_HDRD}")
+        log_debug("LIB_GIT_REPO             : ${LIB_REPO}")
+        log_debug("LIB_SUBPROJECT           : ${LIB_SP}")
+        log_debug("LIB_SUBPROJECT_INCLUDE   : ${LIB_SPI}")
+        log_debug("LIB_SUBPROJECT_DIR       : ${LIB_SPD}")
+
         # Find the package on our system
         message(STATUS "Finding library on system: ${LIB_NAME}")
 
