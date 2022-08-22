@@ -350,7 +350,7 @@ function(include_lib)
             # Configure as local git submodule / subproject
             message(STATUS "Configuring ${LIB_NAME} as Git Submodule")
             # This builds the library from source (you'll need the library's required build deps)
-            message(STATUS "Using ${LIB_NAME} as direct CMake project")
+            message(STATUS "Using ${LIB_NAME} as Git Submodule CMake project")
             add_subdirectory(${LIB_SP})
             set(HEADERS_${LIB_INCLUDE_NAME} ${SUBPROJECT_INCLUDE} CACHE INTERNAL "Dynamically set library header includes")
             log_debug("HEADERS_${LIB_INCLUDE_NAME}: ${HEADERS_${LIB_INCLUDE_NAME}}")
