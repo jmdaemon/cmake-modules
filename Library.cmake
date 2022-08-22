@@ -317,6 +317,7 @@ function(include_lib)
             set_target_properties(${LIB_NAME} PROPERTIES IMPORTED_LOCATION ${LIB_FOUND})
 
             log_debug("HEADERS_${LIB_INCLUDE_NAME}: ${HEADERS${LIB_INCLUDE_NAME}}")
+            message(STATUS "Using ${LIB_NAME} system package")
             return() # Exit early
         endif()
 
@@ -341,6 +342,7 @@ function(include_lib)
                 endif()
                 FetchContent_Declare(${LIB_NAME}
                     GIT_REPOSITORY  ${LIB_REPO})
+                message(STATUS "Using ${LIB_NAME} as CMake FetchContent project")
                 FetchContent_MakeAvailable(${LIB_NAME})
                 return()
             endif()
@@ -348,6 +350,7 @@ function(include_lib)
             # Configure as local git submodule / subproject
             message(STATUS "Configuring ${LIB_NAME} as Git Submodule")
             # This builds the library from source (you'll need the library's required build deps)
+            message(STATUS "Using ${LIB_NAME} as direct CMake project")
             add_subdirectory(${LIB_SP})
             set(HEADERS_${LIB_INCLUDE_NAME} ${SUBPROJECT_INCLUDE} CACHE INTERNAL "Dynamically set library header includes")
             log_debug("HEADERS_${LIB_INCLUDE_NAME}: ${HEADERS_${LIB_INCLUDE_NAME}}")
