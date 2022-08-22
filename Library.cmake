@@ -261,7 +261,7 @@ function(include_lib)
         log_debug("LIB_SUBPROJECT_DIR       : ${LIB_SPD}")
 
         # Find the package on our system
-        message(STATUS "Finding library on system: ${LIB_NAME}")
+        log_info("Finding library on system: ${LIB_NAME}")
 
         # Sets the variable name containing the directory to the library's header
         string(TOUPPER ${LIB_NAME} LIB_INCLUDE_NAME)
@@ -300,7 +300,7 @@ function(include_lib)
         endif()
 
         if ((EXISTS ${LIB_USR}) OR (EXISTS ${LIB_LOCAL}))
-            message(STATUS "Found: ${LIB_FOUND}")
+            log_info("Found: ${LIB_FOUND}")
 
             if (NOT "${TARG_NAME}" STREQUAL "")
                 set(LIB_NAME ${TARG_NAME})
@@ -322,8 +322,6 @@ function(include_lib)
         endif()
 
         # Assume that we're configuring a subproject
-        message(STATUS "Configuring ${LIB_NAME} as a subproject")
-
         # If the header exists in include/some_dir, include the public header there
         if (NOT "${LIB_SPD}" STREQUAL "")
             set(HDRD "${LIB_SPD}/")
@@ -336,7 +334,7 @@ function(include_lib)
         if (NOT EXISTS ${LIB_SP})
             if (NOT ${USE_AS_SUBMODULE})
                 # Configure with FetchContent
-                message(STATUS "Configuring ${LIB_NAME} with FetchContent")
+                log_info("Configuring ${LIB_NAME} with FetchContent")
                 if (NOT "${TARG_NAME}" STREQUAL "")
                     set(LIB_NAME ${TARG_NAME})
                 endif()
@@ -348,7 +346,7 @@ function(include_lib)
             endif()
         else()
             # Configure as local git submodule / subproject
-            message(STATUS "Configuring ${LIB_NAME} as Git Submodule")
+            log_info("Configuring ${LIB_NAME} as Git Submodule")
             # This builds the library from source (you'll need the library's required build deps)
             message(STATUS "Using ${LIB_NAME} as Git Submodule CMake project")
             add_subdirectory(${LIB_SP})
