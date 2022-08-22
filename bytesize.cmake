@@ -1,21 +1,16 @@
-# Bytesize C Library
-
-# You can include bytesize into your project in two ways. You can:
-# 1.a Install the library as a package system wide. 
-# 2.b Toggle ${USE_AS_SUBMODULE}, and include library as a git submodule in your project.
+# You can use this library two ways. Either:
+# - Install the library as a package system wide or
+# - Set ${USE_AS_SUBMODULE}, and include the library as a git submodule.
 include(Library)
 
-set(USE_AS_SUBMODULE OFF)
-
-# Library Variables 
+# Library variables 
 set(LIB_NAME bytesize)
-set(LIB_NAMES bytesize libbytesize)
-set(LIB_PUBLIC_HEADER bytesize.h)
+set(LIB_NAMES ${LIB_NAME} lib${LIB_NAME})
 set(LIB_GIT_REPO https://github.com/jmdaemon/bytesize)
 
 # Subproject variables
-set(LIB_SUBPROJECT "${PROJECT_SOURCE_DIR}/subprojects/bytesize")
-set(LIB_SUBPROJECT_INCLUDE "${PROJECT_SOURCE_DIR}/subprojects/bytesize/include")
+set(LIB_SUBPROJECT ${PROJECT_SOURCE_DIR}/subprojects/${LIB_NAME})
+set(LIB_SUBPROJECT_INCLUDE ${PROJECT_SOURCE_DIR}/subprojects/${LIB_NAME}/include)
 
 include_lib(
     NAME ${LIB_NAME}
