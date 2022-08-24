@@ -11,6 +11,26 @@ set(USR_LOCAL /usr/local/lib CACHE INTERNAL "Locally installed libraries")
 set(USR_INCLUDE /usr/include CACHE INTERNAL "System-wide installed library headers")
 set(USR_LOCAL_INCLUDE /usr/local/include CACHE INTERNAL "Locally installed library headers")
 
+# Functions
+
+# Create executables
+function(make_bin)
+    set(ARG_PREFIX BIN)
+    set(_OPTIONS_ARGS )
+    set(_ONE_VALUE_ARGS NAME)
+    set(_MULTI_VALUE_ARGS HDRS SRCS DEPS)
+    cmake_parse_arguments(${ARG_PREFIX} "${_OPTIONS_ARGS}" "${_ONE_VALUE_ARGS}" "${_MULTI_VALUE_ARGS}" ${ARGN})
+
+    # Create binary
+    set(BN_NAME ${BIN_NAME}-bin)
+    add_executable(${BN_NAME} ${BIN_SRCS})
+    target_include_directories(${BN_NAME} PUBLIC ${BIN_HDRS})
+    target_link_libraries(${BN_NAME} PRIVATE ${BIN_DEPS})
+
+    # Rename binary executable without -bin suffix
+    set_target_properties(${BN_NAME} PROPERTIES OUTPUT_NAME ${BIN_NAME})
+endfunction()
+
 # Create either a static or shared library
 function(make_lib)
     set(ARG_PREFIX LIB)
