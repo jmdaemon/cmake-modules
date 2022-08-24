@@ -356,3 +356,40 @@ function(include_lib)
         endif()
     endif()
 endfunction()
+
+function(include_subprojects)
+    # Parse custom args
+    # Uses SP_ prefix for variables
+    set(ARG_PREFIX SP) # Don't append a '_' suffix to ARG_PREFIX (it breaks the rest of the parameters)
+    set(_OPTIONS_ARGS)
+    set(_ONE_VALUE_ARGS TOGGLE GIT_MODULE)
+    set(_MULTI_VALUE_ARGS INCLUDES)
+    cmake_parse_arguments(${ARG_PREFIX} "${_OPTIONS_ARGS}" "${_ONE_VALUE_ARGS}" "${_MULTI_VALUE_ARGS}" ${ARGN})
+
+    # Default values
+    if (NOT SP_TOGGLE)
+        set(SP_TOGGLE FALSE)
+    endif()
+
+    if (NOT SP_GIT_MODULE)
+        set(SP_GIT_MODULE FALSE)
+    endif()
+
+    log_debug("SP_TOGGLE    : ${SP_TOGGLE}")
+    log_debug("SP_GIT_MODULE: ${SP_GIT_MODULE}")
+    log_debug("SP_INCLUDES  : ${SP_INCLUDES}")
+
+    set(USE_AS_SUBPROJECT ${SP_TOGGLE})
+    set(USE_AS_SUBMODULE ${SP_GIT_MODULE})
+
+    #foreach(inc ${INCLUDES})
+    foreach(inc IN LISTS SP_INCLUDES)
+    #foreach(inc IN LISTS ${SP_INCLUDES})
+        log_debug("Including subproject: ${inc}")
+        include(${inc})
+    endforeach()
+    
+    unset(USE_AS_SUBMODULE)
+    unset(USE_AS_SUBPROJECT)
+endfunction()
+
