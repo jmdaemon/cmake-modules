@@ -104,17 +104,13 @@ function(import_lib)
     set_property(TARGET ${LIB_NAME} INTERFACE_INCLUDE_DIRECTORIES ${LIB_HDRS})    # Import library headers
 endfunction()
 
-# include_lib
+# Include static/shared libraries as CMake targets
+# Libraries can be included as:
+# - A package installed on your system.
+# - A FetchContent dependency
+# - A Git Submodule CMake subproject
 function(include_lib)
-    # include_lib - Include a library through a variety of methods
-    # `include_lib()` Allows you to include your library as
-    # 1. A package found on your system.
-    # 2. A FetchContent dependency
-    # 3. A Git Submodule
-
-    # Parse custom args
-    # Uses LIB_ prefix for variables
-    set(ARG_PREFIX LIB) # Don't append a '_' suffix to ARG_PREFIX (it breaks the rest of the parameters)
+    set(ARG_PREFIX LIB)
     set(_OPTIONS_ARGS)
     set(_ONE_VALUE_ARGS NAME TARG_NAME TYPE PUB HDRD REPO SP SPI SPD)
     set(_MULTI_VALUE_ARGS NAMES)
@@ -235,8 +231,8 @@ function(include_lib)
     endif()
 endfunction()
 
+# Include projects using either Git Submodule or FetchContent
 function(include_subprojects)
-    # Include projects using either Git Submodule or FetchContent
     # Default values
     set(SP_TOGGLE FALSE)
     set(SP_GIT_MODULE FALSE)
