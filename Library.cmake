@@ -95,29 +95,14 @@ endfunction()
 
 #### make_ssl
 function(make_ssl)
-    # make_ssl - Make static and shared libraries
+    # Creates static and shared library targets
     set(ARG_PREFIX LIB)
     set(_OPTIONS_ARGS )
     set(_ONE_VALUE_ARGS NAME HDR)
     set(_MULTI_VALUE_ARGS HDRS SRCS DEPS)
     cmake_parse_arguments(${ARG_PREFIX} "${_OPTIONS_ARGS}" "${_ONE_VALUE_ARGS}" "${_MULTI_VALUE_ARGS}" ${ARGN})
 
-    # Suffix static libs with _static
-    #if(${LIB_TYPE} STREQUAL STATIC)
-        #set(TARGET ${LIB_NAME}_static)
-    #elseif(${LIB_TYPE} STREQUAL SHARED)
-        #set(TARGET ${LIB_NAME})
-    #endif()
-
-    # Build library
-    #set(LIB_NAME ${TARGET})
-    #add_library(${LIB_NAME}
-        #${LIB_TYPE}
-        #${LIB_SRCS})
-    #target_include_directories(${LIB_NAME} PUBLIC ${LIB_HDRS})
-    #set_target_properties(${LIB_NAME} PROPERTIES PUBLIC_HEADER ${LIB_HDR})
-    #target_link_libraries(${LIB_NAME} PRIVATE ${LIB_DEPS})
-
+    # Build both libraries
     set(LIB_TYPES SHARED STATIC)
     foreach(LIB_TYPE ${LIB_TYPES})
         make_lib(
@@ -358,22 +343,16 @@ function(include_lib)
 endfunction()
 
 function(include_subprojects)
-    # Parse custom args
-    # Uses SP_ prefix for variables
-    set(ARG_PREFIX SP) # Don't append a '_' suffix to ARG_PREFIX (it breaks the rest of the parameters)
+    # Include projects using either Git Submodule or FetchContent
+    # Default values
+    set(SP_TOGGLE FALSE)
+    set(SP_GIT_MODULE FALSE)
+
+    set(ARG_PREFIX SP)
     set(_OPTIONS_ARGS)
     set(_ONE_VALUE_ARGS TOGGLE GIT_MODULE)
     set(_MULTI_VALUE_ARGS INCLUDES)
     cmake_parse_arguments(${ARG_PREFIX} "${_OPTIONS_ARGS}" "${_ONE_VALUE_ARGS}" "${_MULTI_VALUE_ARGS}" ${ARGN})
-
-    # Default values
-    if (NOT SP_TOGGLE)
-        set(SP_TOGGLE FALSE)
-    endif()
-
-    if (NOT SP_GIT_MODULE)
-        set(SP_GIT_MODULE FALSE)
-    endif()
 
     log_debug("SP_TOGGLE    : ${SP_TOGGLE}")
     log_debug("SP_GIT_MODULE: ${SP_GIT_MODULE}")
@@ -390,4 +369,3 @@ function(include_subprojects)
     unset(USE_AS_SUBMODULE)
     unset(USE_AS_SUBPROJECT)
 endfunction()
-
