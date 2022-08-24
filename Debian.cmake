@@ -42,6 +42,7 @@ set(CPACK_DEBIAN_PACKAGE_DEPENDS ${DEB_DEPENDS})
 set(CPACK_SOURCE_IGNORE_FILES
     /dist
     /.*build.*
-    /\\\\.DS_Store)
+    /\\\\.DS_Store
+    /subprojects)
 
 include(CPack)
