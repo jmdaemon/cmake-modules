@@ -1,5 +1,14 @@
 # Library.cmake - Include CMake projects and libraries
 
+# Variable length arguments for CMake functions:
+# Note: Don't append a '_' suffix to ARG_PREFIX, it breaks the parameter matching
+# set(ARG_PREFIX LIB)    # Uses LIB_ prefix for variables
+# set(_OPTIONS_ARGS)     # Optional toggleable flags
+# set(_ONE_VALUE_ARGS)   # Arguments which accept one value
+# set(_MULTI_VALUE_ARGS) # Arguments which accept multiple values
+# Parses the arguments:
+# cmake_parse_arguments(${ARG_PREFIX} "${_OPTIONS_ARGS}" "${_ONE_VALUE_ARGS}" "${_MULTI_VALUE_ARGS}" ${ARGN})
+
 # Imports
 include(FetchContent)
 include(CMakeParseArguments)    # Parse lists of function arguments
@@ -81,57 +90,18 @@ function(make_ssl)
     endforeach()
 endfunction()
 
-# Importing libraries & external libraries
-function(import_library)
-    # import_library - Import a library that has already been built
-    # Set make_library arguments
-    set(ARG_PREFIX LIB)
-    set(_OPTIONS_ARGS )
-    set(_ONE_VALUE_ARGS NAME TYPE FILE)
-    #set(_MULTI_VALUE_ARGS HEADERS SOURCE_DIR DEPS)
-    set(_MULTI_VALUE_ARGS SOURCE_DIR)
-    cmake_parse_arguments(${ARG_PREFIX} "${_OPTIONS_ARGS}" "${_ONE_VALUE_ARGS}" "${_MULTI_VALUE_ARGS}" ${ARGN})
-
-    # LIB_NAME: The name of the library
-    # LIB_TYPE: STATIC or SHARED library
-    # FILE: The name of the library file (lib.a, lib.so)
-    # SOURCE_DIR: The directory where the library is located
-    message(STATUS "Including ${LIB_NAME} library")
-    set(LIB_FILE_PATH "${LIB_SOURCE_DIR}/${LIB_FILE}")
-
-    # Find the library on our system
-    find_library(${LIB_SOURCE_DIR} NAMES ${LIB_FILE})
-    message(STATUS "${LIB_NAME} library location: ${LIB_FILE_PATH}")
-
-    # Add the library as a target on our system
-    add_library(${LIB_NAME} ${LIB_TYPE} IMPORTED GLOBAL)
-    set_target_properties(${LIB_NAME} PROPERTIES
-        IMPORTED_LOCATION "${LIB_FILE_PATH}")
-    #target_include_directories(${LIB_NAME} PUBLIC ${LIB_HEADERS})
-    #target_link_libraries(${LIB_NAME} PRIVATE ${LIB_DEPS})
-endfunction()
-
-function(import_external_library)
-    # import_external_library - Imports a shared or static library into a CMake Project
-    # Set make_library arguments
+# Imports a static/shared library target
+function(import_lib)
     set(ARG_PREFIX LIB)
     set(_OPTIONS_ARGS )
     set(_ONE_VALUE_ARGS NAME TYPE)
-    #set(_MULTI_VALUE_ARGS HEADERS SOURCE_DIR PATH FILE DEPS)
-    set(_MULTI_VALUE_ARGS HEADERS SOURCE_DIR PATH FILE)
+    set(_MULTI_VALUE_ARGS HDRS PATH)
     cmake_parse_arguments(${ARG_PREFIX} "${_OPTIONS_ARGS}" "${_ONE_VALUE_ARGS}" "${_MULTI_VALUE_ARGS}" ${ARGN})
-    
+
+    # Create library target
     add_library(${LIB_NAME} ${LIB_TYPE} IMPORTED)
-    # Import the library file
-    set_property(
-        TARGET ${LIB_NAME}
-        PROPERTY IMPORTED_LOCATION ${LIB_PATH})
-    # Import the library headers
-    set_property(
-        TARGET ${LIB_NAME}
-        PROPERTY INTERFACE_INCLUDE_DIRECTORIES ${LIB_HEADERS})
-    #target_include_directories(${LIB_NAME} PUBLIC ${LIB_HEADERS})
-    #target_link_libraries(${LIB_NAME} PRIVATE ${LIB_DEPS})
+    set_property(TARGET ${LIB_NAME} PROPERTY IMPORTED_LOCATION ${LIB_PATH})       # Import library
+    set_property(TARGET ${LIB_NAME} INTERFACE_INCLUDE_DIRECTORIES ${LIB_HDRS})    # Import library headers
 endfunction()
 
 # include_lib
