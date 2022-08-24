@@ -1,27 +1,16 @@
-#/usr/local/lib/libutility.
-# Library.cmake - Provides functions to create and use libraries 
+# Library.cmake - Include CMake projects and libraries
 
 # Imports
 include(CMakeParseArguments)    # Parse lists of function arguments
 include(Utilities)              # Includes color, logging statements
 
-## Global constants
+# Global constants
 set(USR /usr/lib CACHE INTERNAL "System-wide installed libraries directory")
 set(USR_LOCAL /usr/local/lib CACHE INTERNAL "Locally installed libraries")
 set(USR_INCLUDE /usr/include CACHE INTERNAL "System-wide installed library headers")
 set(USR_LOCAL_INCLUDE /usr/local/include CACHE INTERNAL "Locally installed library headers")
 
-# Create a library from c/cpp sources
 function(make_library)
-    # Arguments:
-    #LIB_NAME       # Name of the library target
-    #LIB_TYPE       # Type of the library to build
-    #LIB_CSTANDARD  # CXX Standard
-    #LIB_HEADERS    # Library headers
-    #LIB_SOURCES    # Library sources
-    #LIB_DEPS       # Library dependencies
-
-    # Set make_library arguments
     set(ARG_PREFIX LIB)
     set(_OPTIONS_ARGS )
     set(_ONE_VALUE_ARGS NAME TYPE CSTANDARD)
@@ -65,44 +54,44 @@ function(make_library)
         FILES ${LIB_SRC_GROUP_FILES})
 endfunction()
 
-#### make_lib
+# Create either a static or shared library
 function(make_lib)
-    # make_lib - Similar to make_library except with slightly less options
     set(ARG_PREFIX LIB)
     set(_OPTIONS_ARGS )
     set(_ONE_VALUE_ARGS NAME TYPE HDR)
     set(_MULTI_VALUE_ARGS HDRS SRCS DEPS)
     cmake_parse_arguments(${ARG_PREFIX} "${_OPTIONS_ARGS}" "${_ONE_VALUE_ARGS}" "${_MULTI_VALUE_ARGS}" ${ARGN})
 
-    # Suffix static libs with _static
+    # Static library targets have  _static suffix
     if(${LIB_TYPE} STREQUAL STATIC)
         set(TARGET ${LIB_NAME}_static)
     elseif(${LIB_TYPE} STREQUAL SHARED)
         set(TARGET ${LIB_NAME})
     endif()
 
-    # Build library
-    set(LIB_NAME ${TARGET})
-    add_library(${LIB_NAME}
-        ${LIB_TYPE}
-        ${LIB_SRCS})
-    target_include_directories(${LIB_NAME} PUBLIC ${LIB_HDRS})
+    # Create library target
+    set(LB_NAME ${TARGET})
+    add_library(${LB_NAME} ${LIB_TYPE} ${LIB_SRCS})
+    target_include_directories(${LB_NAME} PUBLIC ${LIB_HDRS})
+    target_link_libraries(${LB_NAME} PRIVATE ${LIB_DEPS})
+
     if (EXISTS ${LIB_HDR})
-        set_target_properties(${LIB_NAME} PROPERTIES PUBLIC_HEADER ${LIB_HDR})
+        set_target_properties(${LB_NAME} PROPERTIES PUBLIC_HEADER ${LIB_HDR})
     endif()
-    target_link_libraries(${LIB_NAME} PRIVATE ${LIB_DEPS})
+
+    # Rename static library without _static suffix
+    set_target_properties(${LB_NAME} PROPERTIES OUTPUT_NAME ${LIB_NAME})
 endfunction()
 
-#### make_ssl
+# Creates static and shared library targets
 function(make_ssl)
-    # Creates static and shared library targets
     set(ARG_PREFIX LIB)
     set(_OPTIONS_ARGS )
     set(_ONE_VALUE_ARGS NAME HDR)
     set(_MULTI_VALUE_ARGS HDRS SRCS DEPS)
     cmake_parse_arguments(${ARG_PREFIX} "${_OPTIONS_ARGS}" "${_ONE_VALUE_ARGS}" "${_MULTI_VALUE_ARGS}" ${ARGN})
 
-    # Build both libraries
+    # Build both library types
     set(LIB_TYPES SHARED STATIC)
     foreach(LIB_TYPE ${LIB_TYPES})
         make_lib(
