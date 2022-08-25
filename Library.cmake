@@ -90,6 +90,28 @@ function(make_ssl)
     endforeach()
 endfunction()
 
+# Make QT6 component
+function(make_qt6)
+    set(ARG_PREFIX QT)
+    set(_OPTIONS_ARGS)
+    set(_ONE_VALUE_ARGS NAME)
+    set(_MULTI_VALUE_ARGS HDRS SRCS DEPS UI_HDRS UI_SRCS)
+    cmake_parse_arguments(${ARG_PREFIX} "${_OPTIONS_ARGS}" "${_ONE_VALUE_ARGS}" "${_MULTI_VALUE_ARGS}" ${ARGN})
+    
+    # Compile user interface components
+    # *Note* that we must use qt6_wrap_cpp, since AUTOMOC doesn't detect
+    # header files outside the current directory
+
+    # Manually compile QT6 sources
+    qt6_wrap_cpp(HEADER ${QT_UI_HDRS})
+    qt6_wrap_ui(UI ${QT_UI_SRCS})
+
+    # Add component as a (static) library
+    add_library(${QT_NAME} ${QT_SRCS} ${HEADER} ${UI})
+    target_include_directories(${QT_NAME} PUBLIC ${QT_HDRS})
+    target_link_libraries(${QT_NAME} PRIVATE ${QT_DEPS})
+endfunction()
+
 # Imports a static/shared library target
 function(import_lib)
     set(ARG_PREFIX LIB)
