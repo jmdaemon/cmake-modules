@@ -280,3 +280,22 @@ function(include_subprojects)
     unset(USE_AS_SUBMODULE)
     unset(USE_AS_SUBPROJECT)
 endfunction()
+
+# Create installation rules for static, shared library targets
+function(ilibs)
+    set(ARG_PREFIX INS)
+    set(_OPTIONS_ARGS)
+    set(_ONE_VALUE_ARGS)
+    set(_MULTI_VALUE_ARGS TARGETS COMPS)
+    cmake_parse_arguments(${ARG_PREFIX} "${_OPTIONS_ARGS}" "${_ONE_VALUE_ARGS}" "${_MULTI_VALUE_ARGS}" ${ARGN})
+
+    foreach(T IN ZIP_LISTS INS_TARGETS INS_COMPS)
+        install(TARGETS ${T_0}
+            LIBRARY
+                DESTINATION lib
+                COMPONENT ${T_1}
+            PUBLIC_HEADER
+                DESTINATION include
+                COMPONENT header)
+    endforeach()
+endfunction()
