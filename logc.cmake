@@ -25,5 +25,23 @@ if (NOT TARGET logc)
         add_library(${LIB_NAME} STATIC
             "${PROJECT_SOURCE_DIR}/subprojects/log.c/src/log.c")
         target_include_directories(${LIB_NAME} PUBLIC "${HEADERS_LOG_C}")
+    else()
+        FetchContent_Declare(
+            logc
+            GIT_REPOSITORY https://github.com/rxi/log.c
+            GIT_TAG        master
+        )
+        FetchContent_MakeAvailable(logc)
+        # Get the source directory of log.c
+        set(LOG_C_SRC_DIR ${logc_SOURCE_DIR})
+
+        # Add the library
+        add_library(logc SHARED)
+        target_sources(logc
+            PRIVATE "${LOG_C_SRC_DIR}/src/log.c"
+            PUBLIC  "${LOG_C_SRC_DIR}/src")
+        target_include_directories(logc PUBLIC "${LOG_C_SRC_DIR}/src")
+        set_target_properties(logc PROPERTIES LINKER_LANGUAGE C)
+        set(LOG_C_INCLUDES "${LOG_C_SRC_DIR}/src")
     endif()
 endif()
