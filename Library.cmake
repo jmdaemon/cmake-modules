@@ -140,6 +140,9 @@ function(make_gresource)
     # Find glib-compile-resources
     find_program(GLIB_COMPILE_RESOURCES NAMES glib-compile-resources REQUIRED)
 
+    # Automatically find and add dependencies
+    execute_process(COMMAND ${GLIB_COMPILE_RESOURCES} --generate-dependencies ${GR_XML} OUTPUT_VARIABLE GR_DEPS)
+
     # Generate the gresource source file
     add_custom_command(
         OUTPUT ${GR_SRC}
