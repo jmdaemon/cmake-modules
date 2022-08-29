@@ -137,11 +137,24 @@ function(make_gresource)
     set(_MULTI_VALUE_ARGS SRC_ARGS HDR_ARGS DEPS)
     cmake_parse_arguments(${ARG_PREFIX} "${_OPTIONS_ARGS}" "${_ONE_VALUE_ARGS}" "${_MULTI_VALUE_ARGS}" ${ARGN})
 
+    message(STATUS "GR_WD: ${GR_WD}")
+
     # Find glib-compile-resources
     find_program(GLIB_COMPILE_RESOURCES NAMES glib-compile-resources REQUIRED)
 
     # Automatically find and add dependencies
-    execute_process(COMMAND ${GLIB_COMPILE_RESOURCES} --generate-dependencies ${GR_XML} OUTPUT_VARIABLE GR_DEPS)
+    execute_process(COMMAND ${GLIB_COMPILE_RESOURCES} --generate-dependencies ${GR_XML} WORKING_DIRECTORY ${GR_WD} OUTPUT_VARIABLE GR_DEPS)
+
+    if (NOT GR_DEPS)
+        log_debug("GLIB Command: ${GLIB_COMPILE_RESOURCES} --generate-dependencies ${GR_XML}")
+        log_debug("GR_DEPS: ${GR_DEPS}")
+        message(FATAL_ERROR "No gresource dependencies detected. Exiting...")
+    endif()
+
+    # Format list properly for add_custom_command()
+    string(REPLACE "\n" ";" GR_DEPS ${GR_DEPS})
+    list(POP_BACK GR_DEPS)
+    message(STATUS "Including GTK UI Files: ${GR_DEPS}")
 
     # Generate the gresource source file
     add_custom_command(
@@ -164,7 +177,8 @@ function(make_gresource)
             --target=${GR_HDR_OUT} --generate-header --internal ${GR_HDR_ARGS}
             ${GR_XML}
         VERBATIM
-        MAIN_DEPENDENCY ${GR_XML})
+        MAIN_DEPENDENCY ${GR_XML}
+        DEPENDS ${GR_DEPS})
 
     add_custom_target(${GR_NAME} DEPENDS ${SRC_SRC_OUT} ${GR_HDR_OUT})
 
