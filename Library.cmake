@@ -167,6 +167,8 @@ function(make_gresource)
         MAIN_DEPENDENCY ${GR_XML})
 
     add_custom_target(${GR_NAME} DEPENDS ${SRC_SRC_OUT} ${GR_HDR_OUT})
+
+    set_source_files_properties(${GR_SRC_OUT} ${GR_HDR_OUT} PROPERTIES GENERATED TRUE)
 endfunction()
 
 # Include static/shared libraries as CMake targets
