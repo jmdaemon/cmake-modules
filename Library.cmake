@@ -90,6 +90,7 @@ function(make_ssl)
     endforeach()
 endfunction()
 
+# QT
 # Make QT6 component
 function(make_qt6)
     set(ARG_PREFIX QT)
@@ -124,6 +125,45 @@ function(import_lib)
     add_library(${LIB_NAME} ${LIB_TYPE} IMPORTED)
     set_property(TARGET ${LIB_NAME} PROPERTY IMPORTED_LOCATION ${LIB_PATH})       # Import library
     set_property(TARGET ${LIB_NAME} INTERFACE_INCLUDE_DIRECTORIES ${LIB_HDRS})    # Import library headers
+endfunction()
+
+# GTK
+# Compile program gresource files
+function(make_gresource)
+    # All these arguments are mandatory except for SRC{ARGS, HDR_ARGS
+    set(ARG_PREFIX GR)
+    set(_OPTIONS_ARGS )
+    set(_ONE_VALUE_ARGS NAME SRC SRC_OUT HDR HDR_OUT WD XML)
+    set(_MULTI_VALUE_ARGS SRC_ARGS HDR_ARGS DEPS)
+    cmake_parse_arguments(${ARG_PREFIX} "${_OPTIONS_ARGS}" "${_ONE_VALUE_ARGS}" "${_MULTI_VALUE_ARGS}" ${ARGN})
+
+    # Find glib-compile-resources
+    find_program(GLIB_COMPILE_RESOURCES NAMES glib-compile-resources REQUIRED)
+
+    # Generate the gresource source file
+    add_custom_command(
+        OUTPUT ${GR_SRC}
+        WORKING_DIRECTORY ${GR_WD}
+        COMMAND ${GLIB_COMPILE_RESOURCES}
+        ARGS
+            --target=${GR_SRC_OUT} --generate-source --internal ${GR_SRC_ARGS}
+            ${GR_XML}
+        VERBATIM
+        MAIN_DEPENDENCY ${GR_XML}
+        DEPENDS ${GR_DEPS})
+
+    # Generate the gresource header file
+    add_custom_command(
+        OUTPUT ${GR_HDR}
+        WORKING_DIRECTORY ${GR_WD}
+        COMMAND ${GLIB_COMPILE_RESOURCES}
+        ARGS
+            --target=${GR_HDR_OUT} --generate-header --internal ${GR_HDR_ARGS}
+            ${GR_XML}
+        VERBATIM
+        MAIN_DEPENDENCY ${GR_XML})
+
+    add_custom_target(${GR_NAME} DEPENDS ${SRC_SRC_OUT} ${GR_HDR_OUT})
 endfunction()
 
 # Include static/shared libraries as CMake targets
